@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { authRoutes, protectRoutes } from "../routes/routes";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { authRoutes, protectRoutes } from "./routes/routes";
 
 export default function middleware(request: NextRequest) {
     const currentUser = request.cookies.get("currenUser")?.value;
-    console.log(currentUser)
     if (
         protectRoutes.includes(request.nextUrl.pathname) &&
         (!currentUser || Date.now() > JSON.parse(currentUser).expiredAt)

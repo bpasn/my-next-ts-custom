@@ -1,39 +1,49 @@
 import React from 'react'
-import { BoxAuthBackground, ButtonFormSubmit, Division, FormControlTextFied, FormGroupCustom, Line, SocialBox } from './StyledAuth';
+import { BoxAuthBackground, ButtonFormSubmit, Division, FormGroupCustom, Line, SocialBox } from './StyledAuth';
 import { Box, Grid, Link, Typography } from '@mui/material';
 import ButtonSocialComponent from '@/components/ButtonSocialComponent';
 import InputComponent from '@/components/InputSignComponent';
 import CheckBoxComponent from '@/components/CheckBoxComponent';
 import { useForm } from 'react-hook-form';
-
+import Image from 'next/image';
+import Logo from '../../assets/img/logo-5.png';
+import axios from 'axios';
+import { useRouter } from 'next/router';
 type Props = {}
 interface Request {
     username: string;
     password: string;
     checked1: boolean;
 }
-const SignInPage = (props: Props) => {
-    const { register, handleSubmit, formState } = useForm<Request>();
-//     const { severity, errorStatus, message } = useAppSelector(state => state.Error);
-    // const { loading } = useAppSelector(state => state.SignUser)
-//     const dispatch = useAppDispatch();
-    const onSubmit = (data: Request) => {
-        // dispatch<any>(signIn(data))
+const AuthSignIn = (props: Props) => {
+    const { register, handleSubmit, formState } = useForm<Request>({
+        mode: "onChange"
+    });
+    const { push } = useRouter()
+    const onSubmit = async (data: Request) => {
+        try {
+            const result = await axios.post('/api/auth/signin', data)
+            if (result.data.success) {
+                push('/')
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
     return (
         <BoxAuthBackground>
             <FormGroupCustom onSubmit={handleSubmit(onSubmit)}>
                 <Grid container>
-                    <Grid item sm={12} md={12} textAlign={"center"} mb={4}>
-                        {/* <img src={require('../../assets/img/logo-5.png')} alt="logo" /> */}
+                    <Grid item sm={12} xs={12} md={12} textAlign={"center"} mb={4}>
+                        <Image src={Logo} alt="logo" />
                     </Grid>
-                    <Grid item sm={12} md={12} >
-                        {/* <SocialBox>
+                    <Grid item sm={12} xs={12} md={12} >
+                        <SocialBox>
                             <Typography variant="h5">Sign in with</Typography>
                             <ButtonSocialComponent social='facebook' faIcon='fa-facebook' />
                             <ButtonSocialComponent social='twitter' faIcon='fa-twitter' />
                             <ButtonSocialComponent social='google' faIcon='fa-google-plus' />
-                        </SocialBox> */}
+                        </SocialBox>
                         <Division sx={{
                             marginBottom: "3rem !important",
                             marginTop: "1.5rem !important"
@@ -42,12 +52,16 @@ const SignInPage = (props: Props) => {
                             <span>or</span>
                             <Line side='right' />
                         </Division>
-                       
-                        <FormControlTextFied marginBottom={"2.85rem"}>
+
+                        <Box marginBottom={"2.85rem"}>
                             <InputComponent
                                 formState={formState}
                                 options={{
-                                    required: true, maxLength: 30, minLength: {
+                                    required: {
+                                        value: true,
+                                        message: "Field Is Required"
+                                    },
+                                    minLength: {
                                         value: 6,
                                         message: "Username requirements: 6 characters or more"
                                     }
@@ -55,8 +69,8 @@ const SignInPage = (props: Props) => {
                                 register={register}
                                 name={'username'}
                                 label='Login' />
-                        </FormControlTextFied>
-                        <FormControlTextFied marginBottom={"3rem"}>
+                        </Box>
+                        <Box marginBottom={"3rem"}>
                             <InputComponent
                                 type='password'
                                 suffixIcon={true}
@@ -71,7 +85,7 @@ const SignInPage = (props: Props) => {
                                 register={register}
                                 name={'password'}
                                 label='Password' />
-                        </FormControlTextFied>
+                        </Box>
 
                         <Box display={"flex"} justifyContent={"space-between"} mb={"1.5rem"} mt={"1rem"}>
                             <CheckBoxComponent
@@ -84,13 +98,12 @@ const SignInPage = (props: Props) => {
                                 <Link>Forgot Password ?</Link>
                             </Box>
                         </Box>
-
                         <ButtonFormSubmit disableTouchRipple type='submit'>Sign in</ButtonFormSubmit>
 
                     </Grid>
-                    <Grid item sm={12} md={12}>
+                    <Grid item sm={12} xs={12} md={12}>
                         <Box textAlign="center">
-                            <Box component={"p"} marginTop={"1.5rem"}>New Here? <Link >Register </Link> as new user !</Box>
+                            <Box component={"p"} color={"#5247bd"} marginTop={"1.5rem"}>New Here? <Link href='/auth/signup'>Register </Link> as new user !</Box>
                         </Box>
                     </Grid>
                 </Grid>
@@ -99,4 +112,4 @@ const SignInPage = (props: Props) => {
     )
 }
 
-export default SignInPage
+export default AuthSignIn

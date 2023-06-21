@@ -1,5 +1,6 @@
+import { styled } from "@mui/material/styles"
 import { Box } from "@mui/material";
-import styled from "@emotion/styled/macro";
+import { styled as styleComponent } from 'styled-components'
 import MuiButton from '@mui/material/Button'
 export const LabelForm = styled("label")({
     display: "inline-block",
@@ -8,7 +9,7 @@ export const LabelForm = styled("label")({
 export const InputField = styled("input")({
     display: "block",
     width: "100%",
-    height: "calc(1.5em + 0.75rem +2px",
+    height: "calc(1.5em + 0.75rem +2px)",
     padding: '0.375rem 0.75rem',
     fontSize: "1rem",
     fontWeight: 400,
@@ -33,12 +34,12 @@ export const BoxAuthBackground = styled(Box)({
     height: "100%",
     overflowX: 'hidden',
     overflowY: 'auto',
-    [`${LabelForm}`]: {
+    [`& .label-form`]: {
         color: "#3b3f5c",
         textTransform: "uppercase",
         fontSize: "13px",
     },
-    [`${InputField}`]: {
+    [`& .input-form`]: {
         position: "relative",
         boxSizing: "border-box",
         height: "auto",
@@ -49,7 +50,7 @@ export const BoxAuthBackground = styled(Box)({
         background: "transparent",
         borderBottom: "1px solid #e9ecef",
     },
-    [`${InputField}:focus`]: {
+    [`& .input-form:focus`]: {
         outline: "none"
     }
 })
@@ -80,36 +81,39 @@ export const SocialBox = styled(Box)({
         marginTop: 0,
     }
 })
-interface buttonProp {
+type buttonProp = {
     social?: string;
 }
-export const ButtonSocial = styled('button')<buttonProp>((prop) => ({
-    padding: "6px",
-    cursor: "pointer",
-    border: `1px solid ${socialColor(prop.social as string)}`,
-    borderRadius: "50%",
-    width: "40px",
-    height: "auto",
-    color: socialColor(prop.social as string),
-    backgroundColor: "transparent",
-    boxShadow: "none",
-    textShadow: "none",
-    fontSize: "14px",
-    fontWeight: 400,
-    withSpace: "normal",
-    touchAction: "manipulation",
-    willChange: "opacity,transform",
-    WebkitTransition: "all .3s ease-out",
-    marginBottom: "1.5rem",
-    marginRight: "0.5rem",
-    ":hover": {
-        color: "#fff",
-        backgroundColor: socialColor(prop.social as string)
-    },
-    '& @media (prefers-reduced-motion: reduce)': {
-        transition: "none",
-    }
-}))
+export const ButtonSocial = styled('button')<buttonProp>((prop) => {
+    // console.log(prop)
+    return ({
+        padding: "6px",
+        cursor: "pointer",
+        border: `1px solid ${socialColor(`${prop.social}`)}`,
+        borderRadius: "50%",
+        width: "40px",
+        height: "auto",
+        color: socialColor(prop.social as string),
+        backgroundColor: "transparent",
+        boxShadow: "none",
+        textShadow: "none",
+        fontSize: "14px",
+        fontWeight: 400,
+        withSpace: "normal",
+        touchAction: "manipulation",
+        willChange: "opacity,transform",
+        WebkitTransition: "all .3s ease-out",
+        marginBottom: "1.5rem",
+        marginRight: "0.5rem",
+        ":hover": {
+            color: "#fff",
+            backgroundColor: socialColor(prop.social as string)
+        },
+        '& @media (prefers-reduced-motion: reduce)': {
+            transition: "none",
+        }
+    })
+})
 
 export const IConSocial = styled("i")({
     fontFamily: "FontAwesome",
@@ -132,6 +136,7 @@ export const Line = styled(Box)<{ side: string }>((prop) => ({
     top: "10px",
     width: "34%"
 }))
+
 //[`${Line}`]: { border: "1px solid purple"} styled parent styled
 export const Division = styled(Box)({
     float: "none",
@@ -148,16 +153,12 @@ export const Division = styled(Box)({
 
 })
 
-export const FormControlTextFied = styled(Box)({
-
-})
-
 export const CheckBoxCustom = styled('input')((prop) => ({
     boxSizing: "border-box",
     padding: "0",
     position: "absolute",
     zIndex: "-1",
-    opacity: "0",
+    opacity: "0 !important",
     overflow: "visible",
     margin: 0,
     fontFamily: "inherit",
@@ -193,8 +194,8 @@ export const LabelCustom = styled("label")<{ error: boolean } & {
             top: "0.25rem",
             left: "-2.5rem",
             display: "block",
-            width: "1.5rem",
-            height: "1.5rem",
+            width: "1.25rem",
+            height: "1.25rem",
             pointerEvents: "none",
             content: '""',
         },
@@ -206,14 +207,13 @@ export const LabelCustom = styled("label")<{ error: boolean } & {
             top: "0.25rem",
             left: "-2.5rem",
             display: "block",
-            width: "1.5rem",
-            height: "1.5rem",
+            width: "1.25rem",
+            height: "1.25rem",
             content: '""',
             background: "no-repeat 50%/50% 50%",
-            // [`${CheckBoxCustom}:checked`]: {
-
-            //     bakgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e")`
-            // }
+            '& .checkbox-form:checked': {
+                bakgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e")`
+            }
         },
     })
 })
@@ -222,20 +222,35 @@ export const CustomBox = styled(Box)({
     display: "block",
     minHeight: "1.5rem",
     paddingLeft: "1.5rem",
-    [`& ${CheckBoxCustom}:checked~${LabelCustom}::before`]: {
+    [`& .checkbox-form:checked~.label-checkbox-form::before`]: {
         color: "#fff",
         borderColor: "#007bff",
         backgroundColor: "#007bff",
         borderRadius: "0.25rem",
         border: "none",
     },
-    [`& ${CheckBoxCustom}:checked~${LabelCustom}:after`]: {
+    [`& .checkbox-form:checked~.label-checkbox-form:after`]: {
         borderColor: "#007bff !important",
         backgroundColor: "#007bff !important",
         backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e")`,
     }
 })
 
+export const CheckBoxStyle = styleComponent(Box)({
+    boxSizing: "border-box",
+    padding: "0",
+    position: "absolute",
+    zIndex: "-1",
+    opacity: "0 !important",
+    overflow: "visible",
+    margin: 0,
+    fontFamily: "inherit",
+    fontSize: "ingerit",
+    lineHeight: "ingerit",
+    [`${CheckBoxCustom}`]: {
+
+    }
+})
 
 
 const socialColor = (social: string) => {

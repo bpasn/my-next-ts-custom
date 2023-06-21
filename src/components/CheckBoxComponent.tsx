@@ -1,7 +1,7 @@
 import React from 'react'
 import { Box } from '@mui/material'
 import { FormState, RegisterOptions, FieldValues, UseFormRegister } from "react-hook-form"
-import { CheckBoxCustom, CustomBox, LabelCustom } from '@/pages/auth/StyledAuth';
+import { CheckBoxCustom, CheckBoxStyle, CustomBox, LabelCustom } from '@/pages/auth/StyledAuth';
 
 type Props = {
     id: string;
@@ -24,11 +24,11 @@ const CheckBoxComponent = ({ value, label, id, options,
     return (
         <Box marginBottom="1rem">
             <Box display={"flex"} justifyContent={"center"} >
-                <CustomBox sx={{
+                <CustomBox style={{
                     marginRight: "1rem"
                 }}>
-                    <CheckBoxCustom {...register?.(name, { ...options })} id={id} type='checkbox' />
-                    <LabelCustom color={color}  error={(err && ref && !ref.checked) ? true : false} htmlFor={id}>{label}</LabelCustom>
+                    <CheckBoxCustom className='checkbox-form' {...register?.(name, { ...options })} id={id} type='checkbox' />
+                    <LabelCustom className='label-checkbox-form' color={color} error={(err && ref && !ref.checked) ? true : false} htmlFor={id}>{label}</LabelCustom>
                 </CustomBox>
             </Box>
         </Box>

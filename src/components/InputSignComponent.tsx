@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { FormState, RegisterOptions, FieldValues, UseFormRegister, FieldPath } from "react-hook-form"
 import { Box } from '@mui/material';
 import { InputField, LabelForm } from '@/pages/auth/StyledAuth';
+import { red } from '@mui/material/colors';
 interface Props {
     label?: string;
     name: string;
@@ -39,26 +40,27 @@ const InputComponent = ({
         } else {
             setType(type)
         }
-    },[show, type])
+    }, [show, type])
     return (
         <div>
-            <LabelForm>{label}</LabelForm>
+            <LabelForm className='label-form'>{label}</LabelForm>
             <Box position="relative" sx={{
                 '& i': {
+                    color:"#dee2e6!important",
                     position: "absolute",
-                    top: "6px",
+                    top: "3px",
                     right: "5px",
                     fontSize: "calc(.45rem + 15px)",
-                    cursor:"pointer"
+                    cursor: "pointer"
                 }
             }}>
                 {register ? (
-                    <InputField type={_type} {...register(name, { ...options })} />
-                ) : <InputField name={name} />}
+                    <InputField autoComplete='false' className='input-form' type={_type} {...register(name, { ...options })} />
+                ) : <InputField autoComplete='false' className='input-form' name={name} />}
                 {suffixIcon ? (<i className={`fa fa-eye${show ? '-slash' : ''}`} onClick={handleShow} />) : ''}
             </Box>
             {err && (
-                <span role="alert" style={{ marginTop: "20px" }}>{err.message ? err.message as string : `${name.substring(0, 1).toUpperCase() + name.substring(1)} is required`}</span>
+                <Box component={"span"} color={red[400]} role="alert" style={{ marginTop: "20px" }}>{err.message ? err.message as string : `${name.substring(0, 1).toUpperCase() + name.substring(1)} is required`}</Box>
             )}
         </div>
     )
