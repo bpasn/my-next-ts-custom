@@ -1,7 +1,6 @@
 import * as React from 'react';
 import '@/styles/globals.css'
 import '@/assets/css/faa-icons.css'
-import { AppProps } from 'next/app'
 import createEmotionCache from '../utils/CreateEmotionCache'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ThemeOptions from '../styles/theme/ThemeOption';
@@ -10,6 +9,10 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import Head from 'next/head';
 import { SessionProvider } from "next-auth/react";
 import { RootLayout } from '@/components';
+import type { AppProps } from 'next/app';
+
+import { wrapper } from '@/lib/store'
+
 const clientSideEmotionCache = createEmotionCache();
 
 interface MyAppProps extends AppProps {
@@ -25,7 +28,7 @@ const theme = createTheme(ThemeOptions);
 
 const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps, ...appProps } = props;
-  const getContent = ():React.JSX.Element => {
+  const getContent = (): React.JSX.Element => {
     if (['/auth/signin', '/auth/signup'].includes(appProps.router.pathname)) {
       return <Component {...pageProps} />
     }
@@ -54,4 +57,4 @@ const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
 }
 
 
-export default MyApp
+export default wrapper.withRedux(MyApp)

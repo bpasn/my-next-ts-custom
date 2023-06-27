@@ -16,10 +16,12 @@ export interface IUser {
 }
 export default class AuthService {
     protected readonly instant: AxiosInstance;
-
-    public constructor(url: string) {
+    protected readonly BASE_URL: string;
+    public constructor() {
+        this.BASE_URL = process.env.NEXT_PUBLIC_DOMAIN || ''
+        console.log(this.BASE_URL)
         this.instant = axios.create({
-            baseURL: url,
+            baseURL: this.BASE_URL,
             timeout: 30000,
             timeoutErrorMessage: "Time Out !"
         })

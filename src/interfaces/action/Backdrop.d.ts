@@ -1,0 +1,3 @@
+interface IBackdrop {
+    show:boolean,
+}

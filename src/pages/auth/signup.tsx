@@ -1,15 +1,16 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { BoxAuthBackground, ButtonFormSubmit, FormGroupCustom } from './StyledAuth';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid, Stack } from '@mui/material';
 import { InputComponent, CheckBoxComponent } from '@/components';
 import { Link } from '@material-ui/core';
 import Image from 'next/image';
-import Logo from '../assets/img/logo-5.png';
+import Logo from '@/assets/img/logo-5.png';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-
-import { signIn } from 'next-auth/react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectAlertState, setAlertState } from '@/lib/slices/AlertSlice';
+import AlertComponent from '@/components/Alert';
 interface Props {
 
 }
@@ -22,19 +23,28 @@ export interface ISignUpRequest {
     telephone: string;
 }
 const AuthSignUp = (props: Props) => {
+    const alertState = useSelector(selectAlertState)
+    const dispatch = useDispatch();
     const { register, handleSubmit, formState } = useForm<ISignUpRequest>()
     const { push } = useRouter();
     const handleSend = async (data: ISignUpRequest) => {
         try {
-            const response = await axios.post("http://localhost:8888/api/auth/signup", {
-                ...data,
-                roles: ["ROLE_ADMIN", "ROLE_USER"]
-            })
-            if (response.data.code === 200) {
-                push("/signin")
-            }
+            dispatch(setAlertState({
+                message: "EIEI",
+                show: true,
+                severity: "warning"
+            }))
+            // const response = await axios.post("/api/auth/signup", {
+            //     ...data,
+            //     roles: ["ROLE_ADMIN", "ROLE_USER"]
+            // })
+            // console.log(response)
+            // // if (response.data.code === 200) {
+            // //     push("/signin")
+            // // }
         } catch (error) {
-            console.log(error)
+
+            console.log("ERROR CATCH")
         }
     }
     return (
@@ -44,18 +54,13 @@ const AuthSignUp = (props: Props) => {
                     <Grid item sm={12} xs={12} md={12} textAlign={"center"} mb={4}>
                         <Image src={Logo} alt="logo" />
                     </Grid>
-                    <Grid item sm={12} md={12} >
-                        {/* {errorStatus ?
+                    <Grid item sm={12} md={12} xs={12}>
+                        {alertState.show ?
                             (<Stack sx={{ width: '100%' }} mb={2} spacing={2} >
-                                <Alert sx={{
-                                    alignItems: "center",
-                                    fontSize: "14px",
-                                    fontFamily: 'Open Sans,"Helvetica Neue",Helvetica,Arial,sans-serif',
-                                    fontWeight: 600
-                                }} severity={severity}>{message}</Alert>
+                                <AlertComponent message={alertState.message} show={alertState.show} severity={alertState.severity} /> : ''
                             </Stack>)
                             : ''
-                        } */}
+                        }
                         <Box marginBottom={"2.85rem"}>
                             <InputComponent
                                 name='email'
