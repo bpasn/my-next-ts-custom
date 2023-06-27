@@ -10,13 +10,11 @@ export const useLogin = () => {
     const login = async (username: string, password: string) => {
         const user = await sAuth.login(username, password);
         if (user) {
-            console.log(user)
-            setItem("currentUser",JSON.stringify(user))
             Cookies.set("currentUser", JSON.stringify(user))
         }
         return user as IUser
     }
-
+    Cookies.set("currentUser", JSON.stringify("user"))
     return { login }
 }
 

@@ -2,15 +2,14 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { BoxAuthBackground, ButtonFormSubmit, FormGroupCustom } from './StyledAuth';
 import { Box, Grid } from '@mui/material';
-import InputComponent from '@/components/InputSignComponent';
-import CheckBoxComponent from '@/components/CheckBoxComponent';
+import { InputComponent, CheckBoxComponent } from '@/components';
 import { Link } from '@material-ui/core';
 import Image from 'next/image';
-import Logo from '../../assets/img/logo-5.png';
+import Logo from '../assets/img/logo-5.png';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 
-
+import { signIn } from 'next-auth/react';
 interface Props {
 
 }
@@ -24,12 +23,15 @@ export interface ISignUpRequest {
 }
 const AuthSignUp = (props: Props) => {
     const { register, handleSubmit, formState } = useForm<ISignUpRequest>()
-    const {push} = useRouter();
+    const { push } = useRouter();
     const handleSend = async (data: ISignUpRequest) => {
         try {
-            const result = await axios.post("/api/auth/signup", data);
-            if(result.data.success){
-                push("/auth/signin")
+            const response = await axios.post("http://localhost:8888/api/auth/signup", {
+                ...data,
+                roles: ["ROLE_ADMIN", "ROLE_USER"]
+            })
+            if (response.data.code === 200) {
+                push("/signin")
             }
         } catch (error) {
             console.log(error)

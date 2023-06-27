@@ -1,21 +1,22 @@
 
-import { Html, Head, Main, NextScript } from 'next/document'
+import { Html, Head, Main, NextScript, DocumentContext } from 'next/document'
 import { ServerStyleSheets as MaterialUiServerStyleSheets } from '@material-ui/core/styles'
 import { ServerStyleSheet as StyledComponentSheets } from 'styled-components'
 import Document from 'next/document'
 import React, { JSX } from 'react'
 import createEmotionCache from '../utils/CreateEmotionCache';
 import createEmotionServer from '@emotion/server/create-instance';
+import { AppPropsType } from 'next/dist/shared/lib/utils'
 export default class MyDocument extends Document {
   render(): JSX.Element {
     return (
       <Html lang="en">
         <Head >
           {/* PWA primary color */}
-         {/* PWA primary color */}
-         <meta
+          {/* PWA primary color */}
+          <meta
             name='theme-color'
-            // content={theme.palette}
+          // content={theme.palette}
           />
           <link
             rel='shortcut icon'
@@ -26,20 +27,23 @@ export default class MyDocument extends Document {
             content=''
           />
           {(this.props as any).emotionStyleTags}
+
         </Head>
         <body>
+
           <Main />
           <NextScript />
+          {/* footer */}
         </body>
       </Html>
     )
   }
 
 }
-{/*  */}
+{/*  */ }
 // getInitialProps ` belongs to `_document` (instead of `_app` ),
 // it's compatible with static-site generation (SSG).
-MyDocument.getInitialProps = async (ctx) => {
+MyDocument.getInitialProps = async (ctx: DocumentContext) => {
   // Resolution order
   //
   // On the server:
@@ -71,21 +75,20 @@ MyDocument.getInitialProps = async (ctx) => {
   const cache = createEmotionCache();
   const { extractCriticalToChunks } = createEmotionServer(cache);
 
-  ctx.renderPage = () => 
-  
-  originalRenderPage({
+  ctx.renderPage = () =>
+    originalRenderPage({
       enhanceApp: (App: any) => (props) => {
         // <App emotionCache={cache} {...props} />
-        return (styledComponentSheet.collectStyles(<App {...props}/>))
+        return (styledComponentSheet.collectStyles(<App {...props} />))
       }
     });
 
   const initialProps = await Document.getInitialProps(ctx);
 
   // this is important. It prevents Emotion to render invalid HTML.
-    // See https://github.com/mui/material-ui/issues/26561#issuecomment-855286153
+  // See https://github.com/mui/material-ui/issues/26561#issuecomment-855286153
   const emotionStyles = extractCriticalToChunks(initialProps.html);
-  
+
   const emotionStyleTags = emotionStyles.styles.map((style) => {
     return (
       <style

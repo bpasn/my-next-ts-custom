@@ -1,14 +1,12 @@
 import React from 'react'
 import { BoxAuthBackground, ButtonFormSubmit, Division, FormGroupCustom, Line, SocialBox } from './StyledAuth';
 import { Box, Grid, Link, Typography } from '@mui/material';
-import ButtonSocialComponent from '@/components/ButtonSocialComponent';
-import InputComponent from '@/components/InputSignComponent';
-import CheckBoxComponent from '@/components/CheckBoxComponent';
 import { useForm } from 'react-hook-form';
 import Image from 'next/image';
-import Logo from '../../assets/img/logo-5.png';
-import axios from 'axios';
+import Logo from '@/assets/img/logo-5.png';
 import { useRouter } from 'next/router';
+import { signIn } from 'next-auth/react';
+import { ButtonSocialComponent, CheckBoxComponent, InputComponent } from '@/components'
 type Props = {}
 interface Request {
     username: string;
@@ -21,14 +19,17 @@ const AuthSignIn = (props: Props) => {
     });
     const { push } = useRouter()
     const onSubmit = async (data: Request) => {
-        try {
-            const result = await axios.post('/api/auth/signin', data)
-            if (result.data.success) {
-                push('/')
+        signIn("SignIn", {
+            username: data.username,
+            password: data.password,
+            redirect: false
+        }).then(response => {
+            if (response?.error) {
+                console.log(response.error);
+            } else {
+                push("/")
             }
-        } catch (error) {
-            console.log(error)
-        }
+        })
     }
     return (
         <BoxAuthBackground>
