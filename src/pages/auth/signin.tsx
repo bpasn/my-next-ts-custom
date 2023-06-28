@@ -1,33 +1,51 @@
 import React from 'react'
 import { BoxAuthBackground, ButtonFormSubmit, Division, FormGroupCustom, Line, SocialBox } from './StyledAuth';
-import { Box, Grid, Link, Typography } from '@mui/material';
+import { Box, Grid, Link, Stack, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import Image from 'next/image';
 import Logo from '@/assets/img/logo-5.png';
 import { useRouter } from 'next/router';
 import { signIn } from 'next-auth/react';
 import { ButtonSocialComponent, CheckBoxComponent, InputComponent } from '@/components'
+import { useDispatch, useSelector } from 'react-redux';
+import { reset, selectAlertState, setAlertState } from '@/lib/slices/AlertSlice';
+import AlertComponent from '@/components/Alert';
 type Props = {}
-interface Request {
+export interface IRequest {
     username: string;
     password: string;
     checked1: boolean;
 }
 const AuthSignIn = (props: Props) => {
+    const alertState = useSelector(selectAlertState)
+    const dispatch = useDispatch();
     const { register, handleSubmit, formState } = useForm<Request>({
         mode: "onChange"
     });
     const { push } = useRouter()
-    const onSubmit = async (data: Request) => {
+    const onSubmit = async (data: IRequest) => {
+        dispatch(reset())
         signIn("SignIn", {
             username: data.username,
             password: data.password,
             redirect: false
         }).then(response => {
             if (response?.error) {
-                console.log(response.error);
+                dispatch(setAlertState({
+                    message: response.error,
+                    show: true,
+                    severity: "error",
+                }))
             } else {
-                push("/")
+                dispatch(setAlertState({
+                    message: "LOGED IN",
+                    show: true,
+                    severity: "success",
+                }))
+                setTimeout(() => {
+                    push("/")
+                    dispatch(reset())
+                },2*1000)
             }
         })
     }
@@ -53,7 +71,12 @@ const AuthSignIn = (props: Props) => {
                             <span>or</span>
                             <Line side='right' />
                         </Division>
-
+                        {alertState.show ?
+                            (<Stack sx={{ width: '100%' }} mb={2} spacing={2} >
+                                <AlertComponent message={alertState.message} show={alertState.show} severity={alertState.severity} />
+                            </Stack>)
+                            : ''
+                        }
                         <Box marginBottom={"2.85rem"}>
                             <InputComponent
                                 formState={formState}

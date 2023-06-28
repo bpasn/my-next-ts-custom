@@ -18,27 +18,26 @@ export const alertSlice = createSlice({
     reducers: {
         //Action To set the alert
         setAlertState(state, action: PayloadAction<IAlert>) {
-            console.log(state)
             state.message = action.payload.message;
             state.severity = action.payload.severity;
             state.show = action.payload.show;
-            console.log({state})
         },
+        reset: () => initialState
     },
 
     //Special reducer for hydrating the state. Special case for next-redux-wrapper
     extraReducers: {
         [HYDRATE]: (state, action) => {
-            console.log({state,action})
+            console.log("HYDRATE")
             return {
-              ...state,
-              ...action.payload,
+                ...state,
+                ...action.payload,
             };
-          },
+        },
     },
 });
 
-export const { setAlertState } = alertSlice.actions;
-export const selectAlertState = (state: AppState) => state.alert
+export const { setAlertState,reset } = alertSlice.actions;
+export const selectAlertState = (state: AppState) => state.alertReducer
 
 export default alertSlice.reducer;

@@ -3,24 +3,19 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import AuthService from '../../../../services/auth/authService'
 import { ISignUpRequest } from '../../../auth/signup'
 import { AxiosError } from 'axios'
-import Reporting from '../../../../utils/CustomError'
-type Data = {
-    message: string;
-    status:string;
-    code:string;
-    success:boolean
-}
+import Reporting from '../../../../utils/Reporting'
+
 interface IRequest extends NextApiRequest {
     body: ISignUpRequest
 }
 export default function handler(
     req: IRequest,
-    res: NextApiResponse<Data>
+    res: NextApiResponse
 ) {
     const SAuth = new AuthService();
     if (req.method === "POST") {
         SAuth.signUp(req.body).then(response => {
-            console.log({response})
+            res.status(201).json(response)
         }).catch(error => {
             new Reporting().report(error,res)
         })

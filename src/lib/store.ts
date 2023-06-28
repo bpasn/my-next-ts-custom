@@ -1,12 +1,17 @@
-import { configureStore, ThunkAction, Action, AnyAction } from '@reduxjs/toolkit';
+import { configureStore, ThunkAction, Action, AnyAction, Store, combineReducers } from '@reduxjs/toolkit';
 import { createWrapper } from 'next-redux-wrapper';
-import { alertSlice } from './slices';
+import { alertSlice, authSlice } from './slices';
 
-const makeStore = () => {
+const combinedReducers = combineReducers({
+  alertReducer: alertSlice.reducer,
+  authReducer: authSlice.reducer
+})
+const makeStore = (): Store => {
   return configureStore({
     devTools: true,
     reducer: {
-      [alertSlice.name]: alertSlice.reducer
+      alertReducer: alertSlice.reducer,
+      authReducer: authSlice.reducer
     }
   })
 }

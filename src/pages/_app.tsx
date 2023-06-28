@@ -27,6 +27,7 @@ const theme = createTheme(ThemeOptions);
 
 
 const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
+ 
   const { Component, emotionCache = clientSideEmotionCache, pageProps, ...appProps } = props;
   const getContent = (): React.JSX.Element => {
     if (['/auth/signin', '/auth/signup'].includes(appProps.router.pathname)) {

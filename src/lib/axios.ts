@@ -5,7 +5,7 @@ import * as cookie from 'cookie';
 import * as setCookie from 'set-cookie-parser';
 
 //create axios instance.
-const axiosInstance = axios.create({
+export const axiosInstance = axios.create({
     baseURL: 'http://localhost:3000',
     withCredentials: true
 });

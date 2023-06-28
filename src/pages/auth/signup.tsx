@@ -9,8 +9,11 @@ import Logo from '@/assets/img/logo-5.png';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectAlertState, setAlertState } from '@/lib/slices/AlertSlice';
+import { reset, selectAlertState, setAlertState } from '@/lib/slices/AlertSlice';
 import AlertComponent from '@/components/Alert';
+import Reporting from '@/utils/Reporting';
+import { AppState } from '@/lib/store';
+import { setAuthState } from '@/lib/slices/AuthSlice';
 interface Props {
 
 }
@@ -24,27 +27,34 @@ export interface ISignUpRequest {
 }
 const AuthSignUp = (props: Props) => {
     const alertState = useSelector(selectAlertState)
+    console.log(alertState)
     const dispatch = useDispatch();
     const { register, handleSubmit, formState } = useForm<ISignUpRequest>()
     const { push } = useRouter();
     const handleSend = async (data: ISignUpRequest) => {
         try {
-            dispatch(setAlertState({
-                message: "EIEI",
-                show: true,
-                severity: "warning"
-            }))
-            // const response = await axios.post("/api/auth/signup", {
-            //     ...data,
-            //     roles: ["ROLE_ADMIN", "ROLE_USER"]
-            // })
-            // console.log(response)
-            // // if (response.data.code === 200) {
-            // //     push("/signin")
-            // // }
-        } catch (error) {
+            const response = await axios.post("/api/auth/signup", {
+                ...data,
+                roles: ["ROLE_ADMIN", "ROLE_USER"]
+            })
+            if (response.data) {
+                dispatch(setAlertState({
+                    message: response.data.message,
+                    show: true,
+                    severity: "success",
+                }))
+                setTimeout(() => {
+                    dispatch(reset())
+                    push('/auth/signin')
+                }, 3 * 1000)
+            }
 
-            console.log("ERROR CATCH")
+        } catch (error) {
+            dispatch(setAlertState({
+                message: new Reporting().reportCli(error).message,
+                show: true,
+                severity: "error",
+            }))
         }
     }
     return (
@@ -57,7 +67,7 @@ const AuthSignUp = (props: Props) => {
                     <Grid item sm={12} md={12} xs={12}>
                         {alertState.show ?
                             (<Stack sx={{ width: '100%' }} mb={2} spacing={2} >
-                                <AlertComponent message={alertState.message} show={alertState.show} severity={alertState.severity} /> : ''
+                                <AlertComponent message={alertState.message} show={alertState.show} severity={alertState.severity} />
                             </Stack>)
                             : ''
                         }
