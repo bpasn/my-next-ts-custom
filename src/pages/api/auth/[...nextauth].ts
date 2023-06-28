@@ -15,7 +15,7 @@ export const jwt = async ({ token, user }: { token: JWT; user?: User }) => {
     // on subsequent calls, token is provided and we need to check if it's expired
     if (token?.accessTokenExpires) {
         if (Date.now() / 1000 < Number(token?.accessTokenExpires)) return { ...token, ...user };
-       
+
     } // else if (token.refreshToken) return refreshAccessToken(token);
 
     return { ...token, ...user }
@@ -28,13 +28,11 @@ export const session = ({ session, token }: { session: { token?: string } & Sess
             error: "Refresh token has expired. Please log in again to get a new refresh token.",
         });
     }
-    console.log("EXPIRED : ", Date.now() / 1000 > Number(token?.accessTokenExpires))
-
-    const accessTokenData = JSON.parse(atob(token?.token.split(".")?.at(1) as string));
+    const accessTokenData = JSON.parse(atob(token?.accessToken.split(".")?.at(1) as string));
     session.user = accessTokenData;
     token.accessTokenExpires = accessTokenData.exp;
 
-    session.token = token?.token;
+    session.accessToken = token?.accessToken;
 
     return Promise.resolve(session);
 }
@@ -42,9 +40,9 @@ export const session = ({ session, token }: { session: { token?: string } & Sess
 export default async function (req: NextApiRequest, res: NextApiResponse) {
     return NextAuth(req, res, {
         secret: process.env.NEXTAUTH_SECRET,
-        pages:{
-            signOut:"/auth/signin",
-            signIn:"/"
+        pages: {
+            signOut: "/auth/signin",
+            signIn: "/"
         },
         providers: [
             CredentialsProvider({
@@ -65,10 +63,9 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
                         username: credentials?.username,
                         password: credentials?.password
                     })
-
-                    if (result.status === 200) {
+                    if (result.data.success) {
                         // Any object returned will be saved in `user` property of the JWT
-                        return result.data
+                        return result.data.payload
                     } else {
                         // If you return null then an error will be displayed advising the user to check their details.
                         return null

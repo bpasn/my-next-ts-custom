@@ -103,3 +103,28 @@ export const navigationData = [
     },
 
 ]
+
+export const testtimonialsData = [
+    {
+        image: Image2,
+        name: 'Serena',
+        web: 'rena.com',
+        message: 'Lorem50',
+        delay: '300'
+    },
+    {
+        image: Image3,
+        name: 'Serena',
+        web: 'rena.com',
+        message: 'Lorem50',
+        delay: '600'
+    },
+    {
+        image: Image4,
+        name: 'Serena',
+        web: 'rena.com',
+        message: 'Lorem50',
+        delay: '900'
+    },
+
+]

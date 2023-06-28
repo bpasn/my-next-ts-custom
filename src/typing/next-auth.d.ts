@@ -9,7 +9,7 @@ declare module "next-auth" {
       refreshTokenExpires?: number;
       accessTokenExpires?: string;
       refreshToken?: string;
-      token?: string;
+      accessToken?: string;
       error?: string;
       user?: User;
     }
@@ -31,7 +31,7 @@ declare module "next-auth" {
       refreshTokenExpires?: number;
       accessTokenExpires?: number;
       refreshToken?: string;
-      token: string;
+      accessToken: string;
       exp?: number;
       iat?: number;
       jti?: string;

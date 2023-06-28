@@ -15,10 +15,12 @@ const RootLayout: React.FunctionComponent<LayoutProps> = ({ children }) => {
         })
     }, [Aos])
     return (
-        <div className="overflow-hidden">
+        <div className="overflow-hiden">
+            <Component.Header />
             <Component.HeroComponent />
             <Component.AboutComponent />
             <Component.FeaturesComponent />
+            <Component.TestimonailsComponent />
         </div>
 
     )

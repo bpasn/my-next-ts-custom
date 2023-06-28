@@ -36,7 +36,7 @@ const NavBarComponent = (props: Props) => {
         })
     }
     return (
-        <nav>
+        <nav className=''>
            <ul className='flex gap-x-8'>
             {navigationData.map(item => (
                 <li key={item.name}>

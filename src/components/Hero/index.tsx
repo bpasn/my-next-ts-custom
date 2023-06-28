@@ -12,9 +12,6 @@ const HeroComponent: React.FunctionComponent<Props> = (props: Props) => {
   const { title, subtitle, btnText, image } = heroData;
   return (
     <section className='lg:h-[900px] py-12'>
-
-      <Header />
-
       <div className="container mx-auto  h-full relative">
         <div className='flex flex-col xl:flex-row items-center h-full md:py-24'>
           {/* Text */}
