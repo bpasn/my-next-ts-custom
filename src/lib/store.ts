@@ -1,6 +1,6 @@
 import { configureStore, ThunkAction, Action, AnyAction, Store, combineReducers } from '@reduxjs/toolkit';
 import { createWrapper } from 'next-redux-wrapper';
-import { alertSlice, authSlice } from './slices';
+import { alertSlice, authSlice, backdropSlice } from './slices';
 
 const combinedReducers = combineReducers({
   alertReducer: alertSlice.reducer,
@@ -11,7 +11,8 @@ const makeStore = (): Store => {
     devTools: true,
     reducer: {
       alertReducer: alertSlice.reducer,
-      authReducer: authSlice.reducer
+      authReducer: authSlice.reducer,
+      backdropReducer: backdropSlice.reducer
     }
   })
 }

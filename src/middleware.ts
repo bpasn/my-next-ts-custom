@@ -3,6 +3,7 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { authRoutes, protectRoutes } from "./routes/routes";
+import { ERole } from "./services/auth/authService";
 
 // import { getToken } from "next-auth/jwt";
 // import { NextRequest, NextResponse } from "next/server";
@@ -14,6 +15,14 @@ export default async function middleware(request: NextRequest) {
         secret: process?.env?.NEXTAUTH_SECRET,
         cookieName: "next-auth.session-token", // next-auth.session-token
     })
+
+
+
+    /**
+     * 
+     * protectRoutes.includes(request.nextUrl.pathname)&& currentUser?.accessToken && Date.now() / 1000 > Number(currentUser.accessTokenExpires)
+     * 
+     */
     if (
         protectRoutes.includes(request.nextUrl.pathname)
         && !currentUser
@@ -22,28 +31,10 @@ export default async function middleware(request: NextRequest) {
         return response;
     }
 
+    if (currentUser && currentUser?.roles.includes(ERole.ROLE_ADMIN) && request.nextUrl.pathname == "/") {
+        return NextResponse.redirect(new URL("/admin/products", request.url))
+    }
     if (authRoutes.includes(request.nextUrl.pathname) && currentUser) {
         return NextResponse.redirect(new URL("/", request.url))
     }
 }
-
-// export async function middleware(request: NextRequest) {
-//     const token = await getToken({
-//         req: request,
-//         secret: process?.env?.NEXTAUTH_SECRET,
-//         cookieName: "session-token",// next-auth.session-token
-//     });
-//     console.log(token)
-//     if(!token?.token){
-//         return NextResponse.redirect(new URL("/auth/signin",request.url));
-//     }
-//     //redirect user witout access to login
-//     // if (token?.token && Date.now() / 1000 < token?.accessTokenExpires) {
-//     //     return NextResponse.redirect("/auth/signin");
-//     // }
-//     //redirect user without admin access to login
-//     if(!token?.isAdmin){
-//         return NextResponse.redirect(new URL("/auth/signin",request.url));
-//     }
-//     return NextResponse.next();
-// }

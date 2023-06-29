@@ -2,10 +2,10 @@ import { ISignUpRequest } from '@/pages/auth/signup';
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
 
 
-enum ERole {
-    ROLE_ADMIN,
-    ROLE_USER,
-    ROLE_MOTAL
+export enum ERole {
+    ROLE_ADMIN = "ROLE_ADMIN",
+    ROLE_USER = "ROLE_USER",
+    ROLE_MOTAL = "ROLE_MOTAL"
 }
 export interface IUser {
     username: string;
@@ -19,7 +19,7 @@ export default class AuthService {
     protected readonly BASE_URL: string;
     public constructor() {
         this.BASE_URL = process.env.NEXT_PUBLIC_DOMAIN || ''
-        console.log(this.BASE_URL)
+        //console.log(this.BASE_URL)
         this.instant = axios.create({
             baseURL: this.BASE_URL,
             timeout: 30000,

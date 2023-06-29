@@ -1,6 +1,4 @@
-import { FooterComponent, HeaderComponent } from '@/components'
 import { NextPage } from 'next'
-import { Main, NextScript } from 'next/document'
 import React from 'react'
 
 type Props = {}

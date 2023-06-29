@@ -36,7 +36,7 @@
     "src/middleware.ts",
     "src/pages/api/auth/[...nextauth].ts.backup",
     ".next/types/**/*.ts"
-  ],
+, "src/components/Spinner/index.tsx"  ],
   "exclude": [
     "node_modules"
   ]

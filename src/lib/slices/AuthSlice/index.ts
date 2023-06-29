@@ -1,9 +1,11 @@
+'use client';
 import { ActionReducerMapBuilder, PayloadAction, SerializedError, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 import { AppState } from '@/lib/store';
 import axios from 'axios';
 import { signIn } from 'next-auth/react';
 import { IRequest } from '@/pages/auth/signin';
+import AuthService, { IUser } from '@/services/auth/authService';
 
 export const fetchUser = createAsyncThunk('auth/me', async (_, thunkAPI) => {
     try {
@@ -15,15 +17,16 @@ export const fetchUser = createAsyncThunk('auth/me', async (_, thunkAPI) => {
     }
 })
 
-export const login = createAsyncThunk('auth/login', async (credentials:IRequest, thunkAPI) => {
+export const login = createAsyncThunk('auth/login', async (credentials: IRequest, thunkAPI) => {
     try {
-        const signin = await signIn("SignIn", { ...credentials, redirect: false });
-        if (signin?.error) {
-            return thunkAPI.rejectWithValue({ error: signin.error })
+        const sAuth: AuthService = new AuthService();
+        const signin = await sAuth.login(credentials.username, credentials.password)
+        if (signin) {
+            sessionStorage.setItem("next-user", JSON.stringify(signin))
         }
         return signin
     } catch (error) {
-        return thunkAPI.rejectWithValue({ error: error instanceof Error && error.message })
+        return thunkAPI.rejectWithValue(error instanceof Error && error.message)
     }
 })
 export enum AuthStates {
@@ -33,17 +36,14 @@ export enum AuthStates {
 export interface IAuthState {
     accessToken: string;
     loading: AuthStates;
-    me?: {
-        name?: string;
-        email?: string;
-    };
+    info?: IUser,
     error?: SerializedError
 }
 
 const internalInitialState: IAuthState = {
     accessToken: '',
     loading: AuthStates.IDLE,
-    me: undefined,
+    info: undefined,
     error: undefined
 }
 
@@ -64,11 +64,22 @@ export const authSlice = createSlice({
             throw new Error(action.error.message)
         });
         builder.addCase(fetchUser.fulfilled, (state, action) => {
-            state.me = action.payload;
+            state.info = action.payload;
             state.loading = AuthStates.IDLE
         });
+        builder.addCase(login.rejected, (state, action) => {
+            state = { ...internalInitialState, error: { message: action.payload as string }, loading: AuthStates.IDLE };
+        })
+        builder.addCase(login.pending, (state, action) => {
+            state.loading = AuthStates.LOADING
+        })
+        builder.addCase(login.fulfilled, (state, action) => {
+            state.loading = AuthStates.IDLE
+        })
         // builder.addCase(register.pending,(state))
     }
 })
 
 export const { setAuthState, reset } = authSlice.actions;
+
+export const selectAuth = authSlice.getInitialState()

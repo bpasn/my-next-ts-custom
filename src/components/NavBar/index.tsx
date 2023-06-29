@@ -3,9 +3,12 @@ import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { signOut } from 'next-auth/react';
 import { navigationData } from '@/data';
+import { Session } from 'next-auth';
 
 
-type Props = {}
+type Props = {
+    session: Session
+}
 interface INavigation {
     name: string;
     href: string;
@@ -37,15 +40,37 @@ const NavBarComponent = (props: Props) => {
     }
     return (
         <nav className=''>
-           <ul className='flex gap-x-8'>
-            {navigationData.map(item => (
-                <li key={item.name}>
-                    <a href={item.href}>
-                        {item.name}
-                    </a>
-                </li>
-            ))}
-           </ul>
+            <ul className='flex gap-x-8'>
+                {navigationData.map(item => {if (props.session && Object.keys(props.session).length) {
+                        if (item.name !== "Signin" && item.name !== "Signup") {
+                            return (
+                                <li key={item.name} onClick={() => {
+                                    if (item.name === "Signout") {
+                                        signOut({ redirect: true })
+                                    }
+                                }}>
+                                    <a href={item.href} className=''>
+                                        {item.name}
+                                    </a>
+                                </li>
+                            )
+                        }
+                    } else {
+                        if (item.name !== 'Signout') {
+                            return (
+                                <li key={item.name} onClick={() => {
+                                    if (item.name === "Signout") {
+                                        signOut({ redirect: true })
+                                    }
+                                }}>
+                                    <a href={item.href} className=''>
+                                        {item.name}
+                                    </a>
+                                </li>
+                            )
+                        }
+                    }})}
+            </ul>
         </nav>
         // <Disclosure as="nav" className="bg-gray-800">
         //     {({ open }) => {

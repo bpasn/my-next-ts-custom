@@ -3,23 +3,21 @@ import { HYDRATE } from 'next-redux-wrapper';
 import { AppState } from '../../store';
 
 // Initial state
-
-const initialState: IAlert = {
-    message: '',
+export interface IBackdrop {
+    show: boolean;
+}
+const initialState = {
     show: false,
-    severity: 'error'
 }
 
 // Actual Slice
 
-export const alertSlice = createSlice({
-    name: 'alert',
+export const backdropSlice = createSlice({
+    name: 'backdrop',
     initialState,
     reducers: {
         //Action To set the alert
-        setAlertState(state, action: PayloadAction<IAlert>) {
-            state.message = action.payload.message;
-            state.severity = action.payload.severity;
+        showBackdrop(state, action: PayloadAction<IBackdrop>) {
             state.show = action.payload.show;
         },
         reset: () => initialState
@@ -37,7 +35,7 @@ export const alertSlice = createSlice({
     },
 });
 
-export const { setAlertState,reset } = alertSlice.actions;
-export const selectAlertState = (state: AppState) => state.alertReducer
+export const { showBackdrop, reset } = backdropSlice.actions;
+export const selectBackdrop = (state: AppState) => state.backdropReducer
 
-export default alertSlice.reducer;
+export default backdropSlice.reducer;

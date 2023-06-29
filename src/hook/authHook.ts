@@ -6,7 +6,6 @@ import useStorage from "./hookStore";
 
 const sAuth = new AuthService()
 export const useLogin = () => {
-    const { setItem, getItem, removeItem } = useStorage()
     const login = async (username: string, password: string) => {
         const user = await sAuth.login(username, password);
         if (user) {

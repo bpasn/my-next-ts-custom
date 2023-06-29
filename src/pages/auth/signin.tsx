@@ -1,3 +1,4 @@
+'use client';
 import React from 'react'
 import { BoxAuthBackground, ButtonFormSubmit, Division, FormGroupCustom, Line, SocialBox } from './StyledAuth';
 import { Box, Grid, Link, Stack, Typography } from '@mui/material';
@@ -10,6 +11,8 @@ import { ButtonSocialComponent, CheckBoxComponent, InputComponent } from '@/comp
 import { useDispatch, useSelector } from 'react-redux';
 import { reset, selectAlertState, setAlertState } from '@/lib/slices/AlertSlice';
 import AlertComponent from '@/components/Alert';
+import { showBackdrop } from '@/lib/slices/Backdrop';
+import { login } from '@/lib/slices/AuthSlice';
 type Props = {}
 export interface IRequest {
     username: string;
@@ -19,11 +22,12 @@ export interface IRequest {
 const AuthSignIn = (props: Props) => {
     const alertState = useSelector(selectAlertState)
     const dispatch = useDispatch();
-    const { register, handleSubmit, formState } = useForm<Request>({
+    const { register, handleSubmit, formState } = useForm<IRequest>({
         mode: "onChange"
     });
     const { push } = useRouter()
     const onSubmit = async (data: IRequest) => {
+
         dispatch(reset())
         signIn("SignIn", {
             username: data.username,
@@ -31,27 +35,27 @@ const AuthSignIn = (props: Props) => {
             redirect: false
         }).then(response => {
             if (response?.error) {
+                //console.log(response.error)
                 dispatch(setAlertState({
                     message: response.error,
                     show: true,
                     severity: "error",
                 }))
             } else {
-                dispatch(setAlertState({
-                    message: "LOGED IN",
-                    show: true,
-                    severity: "success",
-                }))
-                setTimeout(() => {
-                    push("/")
-                    dispatch(reset())
-                },2*1000)
+                push("/")
+                dispatch(reset())
             }
         })
     }
     return (
         <BoxAuthBackground>
-            <FormGroupCustom onSubmit={handleSubmit(onSubmit)}>
+            <FormGroupCustom onSubmit={handleSubmit(data => {
+                dispatch(showBackdrop({ show: true }))
+                setTimeout(() => {
+                    onSubmit(data)
+                    dispatch(showBackdrop({ show: false }))
+                }, 1.5 * 1000)
+            })}>
                 <Grid container>
                     <Grid item sm={12} xs={12} md={12} textAlign={"center"} mb={4}>
                         <Image src={Logo} alt="logo" />

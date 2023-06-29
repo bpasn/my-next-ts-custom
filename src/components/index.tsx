@@ -14,6 +14,9 @@ import HeroComponent from "./Hero";
 import TestimonailsComponent from "./Testimonials";
 import Header from "./Header";
 import NavMobileComponent from "./NavMobile";
+import AlertComponent from "./Alert";
+import TailwindDialog from "./Dialog/TailwindDialog";
+import BackDrop from "./Backdrop";
 
 export {
 
@@ -24,7 +27,6 @@ export {
     NavBarComponent,
     ButtonSocialComponent,
     CheckBoxComponent,
-    DialogComponent,
     InputComponent,
     FooterComponent,
 
@@ -37,5 +39,13 @@ export {
     HeroComponent,
     TestimonailsComponent,
     Header,
-    NavMobileComponent
+    NavMobileComponent,
+
+    AlertComponent,
+
+    //Dialog
+    TailwindDialog, // tailwin
+    DialogComponent, // Material
+    BackDrop
+
 }

@@ -2,9 +2,12 @@ import React, { useEffect } from 'react'
 import { NavBarComponent, NavMobileComponent } from '@/components'
 import { FaBars } from 'react-icons/fa';
 import { BsArrowRight } from 'react-icons/bs';
+import { useSession } from 'next-auth/react';
+import { Session } from 'next-auth';
 type Props = {}
 
 const HeaderComponent: React.FunctionComponent<Props> = (props: Props) => {
+    const session = useSession();
     const [scrollY, setScrollY] = React.useState(0);
     const [opacity,setOpacity] = React.useState(0.0);
     const maxOpacity = 0.01;
@@ -40,7 +43,7 @@ const HeaderComponent: React.FunctionComponent<Props> = (props: Props) => {
         <header
             data-te-navbar-ref
 
-            className='flex-no-wrap flex w-full items-center justify-between lg:flex-wrap lg:justify-start mb-12 lg:mb-0 z-20 px-4 lg:px-0'
+            className='flex-no-wrap relative flex w-full items-center justify-between lg:flex-wrap lg:justify-start mb-12 lg:mb-0 z-20 px-4 lg:px-0'
             data-aos="fade-down" data-aos-delay='1200' data-aos-duration='1000'
         >
             <div className='container mx-auto '>
@@ -54,13 +57,13 @@ const HeaderComponent: React.FunctionComponent<Props> = (props: Props) => {
                         {/* nav initially hidden - Only show on large screen */}
 
                         <div className="hidden lg:flex ">
-                            <NavBarComponent />
+                            <NavBarComponent session={session.data as Session}/>
                         </div>
                     </div>
 
                     {/* mobile nav initially hidden - Only show on large screen*/}
                     <div className={`${navMobile ? 'max-h-52' : 'max-h-0'} lg:hidden absolute top-24 bg-accent-tertiary w-full left-0 right-0 font-bold rounded transition-all overflow-hidden`}>
-                        <NavMobileComponent />
+                        <NavMobileComponent session={session.data as Session}/>
                     </div>
 
                     {/* Button */}

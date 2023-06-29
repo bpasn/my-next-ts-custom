@@ -1,13 +1,18 @@
+'use client';
 import React from 'react';
 import * as Component from '@/components'
 import Aos from 'aos';
 import "aos/dist/aos.css";
+import { signOut, useSession } from 'next-auth/react';
+import useAxioshook from '@/hook/axiosHook';
 
 type LayoutProps = {
     children: React.ReactNode
 }
 
 const RootLayout: React.FunctionComponent<LayoutProps> = ({ children }) => {
+    const session = useSession();
+    const axiosHook = useAxioshook()
     React.useEffect(() => {
         Aos.init({
             duration: 1800,
@@ -15,12 +20,23 @@ const RootLayout: React.FunctionComponent<LayoutProps> = ({ children }) => {
         })
     }, [Aos])
     return (
-        <div className="overflow-hiden">
+        <div className="overflow-hiden py-12">
+            {session?.data?.error && <Component.TailwindDialog show title={session.status} messageBody={session.data.error}
+                callback={() => signOut({
+                    redirect: true
+                })}
+            />}
             <Component.Header />
-            <Component.HeroComponent />
+
+            <div className="h-[100vh]">
+                {children}
+            </div>
+
+            <Component.FooterComponent />
+            {/*<Component.HeroComponent />
             <Component.AboutComponent />
             <Component.FeaturesComponent />
-            <Component.TestimonailsComponent />
+            <Component.TestimonailsComponent /> */}
         </div>
 
     )

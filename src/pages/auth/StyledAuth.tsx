@@ -25,6 +25,7 @@ export const InputField = styled("input")({
 export const BoxAuthBackground = styled(Box)({
     backgroundImage: "linear-gradient(to top, #88d3ce 0%, #6e45e2 100%)",
     backgroundRepeat: "no-repeat",
+    padding:"10px",
     backgroundAttachment: "fixed",
     display: "flex",
     alignItems: "center",
@@ -85,7 +86,7 @@ type buttonProp = {
     social?: string;
 }
 export const ButtonSocial = styled('button')<buttonProp>((prop) => {
-    // console.log(prop)
+    //console.log(prop)
     return ({
         padding: "6px",
         cursor: "pointer",

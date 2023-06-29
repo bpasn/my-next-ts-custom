@@ -1,17 +1,18 @@
 import axiosInstance from "@/lib/axios";
 import { AppState } from "@/lib/store";
 import { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import { useSession } from "next-auth/react";
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 export default function useAxioshook() {
     const dispatch = useDispatch();
-    const authState = useSelector((state: AppState) => state.alert)
+    const session = useSession();
     useEffect(() => {
         axiosInstance.interceptors.request.use(
             (config: InternalAxiosRequestConfig<any>) => {
                 if (!config.headers["Authorization"]) {
-
+                    config.headers['Authorization'] = `Bearer ${session.data?.accessToken}`
                 }
                 return config;
             }
@@ -34,5 +35,5 @@ export default function useAxioshook() {
             }
         )
     }, [dispatch])
-
+    return axiosInstance;
 }

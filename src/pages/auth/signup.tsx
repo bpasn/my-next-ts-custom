@@ -14,6 +14,7 @@ import AlertComponent from '@/components/Alert';
 import Reporting from '@/utils/Reporting';
 import { AppState } from '@/lib/store';
 import { setAuthState } from '@/lib/slices/AuthSlice';
+import { showBackdrop } from '@/lib/slices/Backdrop';
 interface Props {
 
 }
@@ -27,11 +28,12 @@ export interface ISignUpRequest {
 }
 const AuthSignUp = (props: Props) => {
     const alertState = useSelector(selectAlertState)
-    console.log(alertState)
+    //console.log(alertState)
     const dispatch = useDispatch();
     const { register, handleSubmit, formState } = useForm<ISignUpRequest>()
     const { push } = useRouter();
     const handleSend = async (data: ISignUpRequest) => {
+        dispatch(showBackdrop({ show: true }))
         try {
             const response = await axios.post("/api/auth/signup", {
                 ...data,
@@ -46,6 +48,7 @@ const AuthSignUp = (props: Props) => {
                 setTimeout(() => {
                     dispatch(reset())
                     push('/auth/signin')
+                    dispatch(showBackdrop({ show: false }))
                 }, 3 * 1000)
             }
 
@@ -55,6 +58,8 @@ const AuthSignUp = (props: Props) => {
                 show: true,
                 severity: "error",
             }))
+            dispatch(showBackdrop({ show: false }))
+
         }
     }
     return (

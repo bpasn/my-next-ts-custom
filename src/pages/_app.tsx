@@ -8,10 +8,12 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import Head from 'next/head';
 import { SessionProvider } from "next-auth/react";
-import { RootLayout } from '@/components';
+import { BackDrop, RootLayout } from '@/components';
 import type { AppProps } from 'next/app';
 
 import { wrapper } from '@/lib/store'
+import { useSelector } from 'react-redux';
+import { selectBackdrop } from '@/lib/slices/Backdrop';
 
 const clientSideEmotionCache = createEmotionCache();
 
@@ -25,14 +27,20 @@ const theme = createTheme(ThemeOptions);
 
 
 
-
 const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
- 
+  const backdrop = useSelector(selectBackdrop)
+  //console.log(backdrop)
   const { Component, emotionCache = clientSideEmotionCache, pageProps, ...appProps } = props;
   const getContent = (): React.JSX.Element => {
     if (['/auth/signin', '/auth/signup'].includes(appProps.router.pathname)) {
-      return <Component {...pageProps} />
+      return (
+        <React.Suspense fallback={<BackDrop />}>
+          {backdrop.show && <BackDrop />}
+          <Component {...pageProps} />
+        </React.Suspense>
+      )
     }
+   
     return <RootLayout><Component {...pageProps} /></RootLayout>
   }
 

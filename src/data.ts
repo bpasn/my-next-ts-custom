@@ -99,6 +99,10 @@ export const navigationData = [
     },
     {
         name: 'Signup',
+        href: '/auth/signup'
+    },
+    {
+        name: 'Signout',
         href: '#'
     },
 
