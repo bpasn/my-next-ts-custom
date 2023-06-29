@@ -8,7 +8,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import Head from 'next/head';
 import { SessionProvider } from "next-auth/react";
-import { BackDrop, RootLayout } from '@/components';
+import { AdminLayout, BackDrop, RootLayout } from '@/components';
 import type { AppProps } from 'next/app';
 
 import { wrapper } from '@/lib/store'
@@ -40,7 +40,9 @@ const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
         </React.Suspense>
       )
     }
-   
+    if (appProps.router.pathname.startsWith("/admin/")) {
+      return <AdminLayout><Component {...pageProps} /></AdminLayout>
+    }
     return <RootLayout><Component {...pageProps} /></RootLayout>
   }
 

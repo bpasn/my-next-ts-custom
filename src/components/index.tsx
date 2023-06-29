@@ -17,12 +17,12 @@ import NavMobileComponent from "./NavMobile";
 import AlertComponent from "./Alert";
 import TailwindDialog from "./Dialog/TailwindDialog";
 import BackDrop from "./Backdrop";
-
+import AdminLayout from "./AdminLayout";
 export {
 
     // MainLayout
     RootLayout,
-
+    AdminLayout,
     //component
     NavBarComponent,
     ButtonSocialComponent,
