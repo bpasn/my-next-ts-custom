@@ -18,7 +18,7 @@ declare module "next-auth" {
     firstName?: string;
     lastName?: string;
     email?: string | null;
-    roles?:ERole;
+    roles?:ERole[];
     id?: string;
     error?:string;
     contactAddress?: {
@@ -33,7 +33,7 @@ declare module "next-auth/jwt" {
     refreshTokenExpires?: number;
     accessTokenExpires?: number;
     refreshToken?: string;
-    roles?:ERole;
+    roles?:ERole[];
     accessToken: string;
     exp?: number;
     iat?: number;

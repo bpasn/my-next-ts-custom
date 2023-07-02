@@ -33,10 +33,10 @@ const RootLayout: React.FunctionComponent<LayoutProps> = ({ children }) => {
             </div>
 
             <Component.FooterComponent />
-            {/*<Component.HeroComponent />
+            <Component.HeroComponent />
             <Component.AboutComponent />
             <Component.FeaturesComponent />
-            <Component.TestimonailsComponent /> */}
+            <Component.TestimonailsComponent />
         </div>
 
     )

@@ -6,7 +6,7 @@ import Document from 'next/document'
 import React, { JSX } from 'react'
 import createEmotionCache from '../utils/CreateEmotionCache';
 import createEmotionServer from '@emotion/server/create-instance';
-import { AppPropsType } from 'next/dist/shared/lib/utils'
+
 export default class MyDocument extends Document {
   render(): JSX.Element {
     return (

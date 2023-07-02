@@ -48,7 +48,6 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         secret: process.env.NEXTAUTH_SECRET,
         pages: {
             signOut: "/auth/signin",
-            signIn: "/"
         },
         providers: [
             CredentialsProvider({
@@ -84,6 +83,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
                             // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
                         }
                     } catch (error) {
+                        console.log(error)
                         throw new Error(new Reporting().reportCli(error).message)
                     }
                 }

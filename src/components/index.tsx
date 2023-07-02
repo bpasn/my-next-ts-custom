@@ -18,6 +18,7 @@ import AlertComponent from "./Alert";
 import TailwindDialog from "./Dialog/TailwindDialog";
 import BackDrop from "./Backdrop";
 import AdminLayout from "./AdminLayout";
+import DrawerClass from "./Drawer";
 export {
 
     // MainLayout
@@ -46,6 +47,7 @@ export {
     //Dialog
     TailwindDialog, // tailwin
     DialogComponent, // Material
-    BackDrop
+    BackDrop,
+    DrawerClass
 
 }

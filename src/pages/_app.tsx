@@ -14,13 +14,14 @@ import type { AppProps } from 'next/app';
 import { wrapper } from '@/lib/store'
 import { useSelector } from 'react-redux';
 import { selectBackdrop } from '@/lib/slices/Backdrop';
-
 const clientSideEmotionCache = createEmotionCache();
 
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache
 
 }
+
+
 
 //Client-side cache, shared for the whole sesion of the use in the browser.
 const theme = createTheme(ThemeOptions);
@@ -40,8 +41,13 @@ const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
         </React.Suspense>
       )
     }
-    if (appProps.router.pathname.startsWith("/admin/")) {
-      return <AdminLayout><Component {...pageProps} /></AdminLayout>
+    console.log(appProps.router.pathname.startsWith("/admin"))
+    if (appProps.router.pathname.startsWith("/admin")) {
+      return (
+        <AdminLayout >
+          <Component  {...pageProps} />
+        </AdminLayout>
+      )
     }
     return <RootLayout><Component {...pageProps} /></RootLayout>
   }
