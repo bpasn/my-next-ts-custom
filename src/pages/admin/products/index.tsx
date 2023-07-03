@@ -34,7 +34,7 @@ const columns: GridColDef[] = [
     hideSortIcons: true, sortable: true, field: "image", headerName: "Image", width: 70, renderCell(row) {
       return (
         <Box boxShadow={"1px 2px rgba(151,151,152,11)"} borderRadius={"10px"}>
-          <Image loader={() => "http://localhost:8888" + row.value} src={"http://localhost:8888" + row.value} width={70} height={70} alt={''} />
+          <Image style={{ borderRadius: "10px", height: "50px", objectFit: "cover" }} loader={() => "http://localhost:8888" + row.value} src={"http://localhost:8888" + row.value} width={100} height={100} alt={''} />
         </Box>
       )
     }
@@ -43,7 +43,7 @@ const columns: GridColDef[] = [
   { hideSortIcons: true, sortable: true, field: "categoryName", headerName: "Categories Name", width: 130 },
   {
     hideSortIcons: true, sortable: true,
-
+    flex: 1,
     field: "sku", headerName: "SKU", width: 80
   },
   { hideSortIcons: true, sortable: true, field: "price", headerName: "Price", width: 80 },
@@ -52,13 +52,20 @@ const columns: GridColDef[] = [
     hideSortIcons: true, sortable: true, field: "active", headerName: "Status", width: 70,
     align: "center",
     renderCell(row) {
-      return row.value !== "ACTIVE" ? <BsHandbag className="text-red-400 font-bold text-[24px]" /> : <BsBagCheck className="text-blue-400 font-bold text-[24px]" />
+      return row.row.id % 2 === 0 ? <BsHandbag className="text-red-400 font-bold text-[24px]" /> : <BsBagCheck className="text-blue-400 font-bold text-[24px]" />
     }
   },
   {
     flex: 1,
+    align:"center",
     field: "", headerName: "Action", renderCell: () => {
-      return (<button onClick={() => console.log("Edit")}>edit</button>)
+      return (
+        <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"} gap={"20px"}>
+          <FaPencil className=' text-gray-400 font-bold text-[24px] cursor-pointer' onClick={() => console.log("Edit")} />
+          <RiDeleteBin6Line className='text-gray-400  font-bold text-[24px] cursor-pointer' onClick={() => console.log("Delete")} />
+
+        </Box>
+      )
     }
   }
 ]
@@ -67,61 +74,12 @@ const columns: GridColDef[] = [
 
 const Products = () => {
   const dispatch = useDispatch();
-  const [start, setStart] = React.useState(0);
-  const [offset, setOffset] = React.useState(PAGE_COUNT);
-
-  const [payload, setPayload] = React.useState<{
-    payload: IPayload,
-    error?: string | null
-  }>({
-    payload: {
-      products: [],
-      count: 0
-    },
-    error: null
-  });
-
-  if (payload.error) {
-    dispatch(setAlertState({
-      message: payload.error,
-      severity: 'error',
-      show: true
-    }))
-  }
-
-  const fetchData = async () => {
-    try {
-      const { data } = await axiosInstance.get<IPayload>('/api/products/get-all', {
-        params: {
-          limit: start,
-          offset: offset
-        }
-      });
-      if (data) {
-        setPayload({
-          payload: data
-        })
-      }
-    } catch (error) {
-      setPayload({
-        payload: {} as IPayload,
-        error: new Reporting().reportCli(error).message
-      })
-    }
-  }
-  React.useEffect(() => {
-    fetchData()
-  }, [start, offset])
-
-
 
   return (
     <div className="overflow-auto">
       <DataGridComponent
-        rows={payload.payload.products}
+        url='/api/products/get-all'
         columns={columns}
-        count={payload.payload.count}
-        pageCount={PAGE_COUNT + 2}
       />
     </div>
   )

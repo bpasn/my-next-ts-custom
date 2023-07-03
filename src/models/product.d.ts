@@ -1,6 +1,6 @@
 interface IPayload {
     count:number,
-    products: IProducts[]
+    data: any[]
 }
 interface IProducts {
     id:string;
