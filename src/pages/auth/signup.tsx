@@ -28,7 +28,6 @@ export interface ISignUpRequest {
 }
 const AuthSignUp = (props: Props) => {
     const alertState = useSelector(selectAlertState)
-    //console.log(alertState)
     const dispatch = useDispatch();
     const { register, handleSubmit, formState } = useForm<ISignUpRequest>()
     const { push } = useRouter();

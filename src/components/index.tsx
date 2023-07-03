@@ -19,6 +19,7 @@ import TailwindDialog from "./Dialog/TailwindDialog";
 import BackDrop from "./Backdrop";
 import AdminLayout from "./AdminLayout";
 import DrawerClass from "./Drawer";
+import DataGridComponent from './Datagrid'
 export {
 
     // MainLayout
@@ -30,7 +31,7 @@ export {
     CheckBoxComponent,
     InputComponent,
     FooterComponent,
-
+    DataGridComponent,
 
     TestimonailSliderComponent,
     AboutComponent,

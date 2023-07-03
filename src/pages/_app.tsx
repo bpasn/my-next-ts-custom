@@ -30,7 +30,6 @@ const theme = createTheme(ThemeOptions);
 
 const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
   const backdrop = useSelector(selectBackdrop)
-  //console.log(backdrop)
   const { Component, emotionCache = clientSideEmotionCache, pageProps, ...appProps } = props;
   const getContent = (): React.JSX.Element => {
     if (['/auth/signin', '/auth/signup'].includes(appProps.router.pathname)) {
@@ -41,7 +40,6 @@ const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
         </React.Suspense>
       )
     }
-    console.log(appProps.router.pathname.startsWith("/admin"))
     if (appProps.router.pathname.startsWith("/admin")) {
       return (
         <AdminLayout >

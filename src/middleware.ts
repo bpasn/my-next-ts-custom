@@ -14,17 +14,16 @@ export default async function middleware(request: NextRequest) {
         secret: process?.env?.NEXTAUTH_SECRET,
         cookieName: "next-auth.session-token", // next-auth.session-token
     })
-
     /**
      * 
      * protectRoutes.includes(request.nextUrl.pathname)&& currentUser?.accessToken && Date.now() / 1000 > Number(currentUser.accessTokenExpires)
      * 
      */
-
     if (
-        (protectRoutes.includes(request.nextUrl.pathname) || request.nextUrl.pathname.startsWith("/admin/"))
+        (protectRoutes.includes(request.nextUrl.pathname) || request.nextUrl.pathname.startsWith("/admin"))
         && !currentUser
     ) {
+
         const response = NextResponse.redirect(new URL("/auth/signin", request.url));
         return response;
     } else {

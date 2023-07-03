@@ -7,7 +7,6 @@ import {
   gridPageCountSelector,
   useGridSelector
 } from '@mui/x-data-grid';
-import { GetServerSideProps, GetStaticProps } from 'next';
 import Reporting from '@/utils/Reporting';
 import axiosInstance from '@/lib/axios';
 import { setAlertState } from '@/lib/slices/AlertSlice';
@@ -16,13 +15,30 @@ import { Box, CircularProgress, Pagination, Stack, PaginationItem } from '@mui/m
 import { BsHandbag, BsBagCheck } from 'react-icons/bs';
 import { FaPencil } from 'react-icons/fa6';
 import { RiDeleteBin6Line } from 'react-icons/ri';
+import Image from 'next/image';
+import useEffectHook from '@/hook/useEffectHook';
+import PaginationComponent from '@/components/Pagination';
+
+import * as Components from '@/components';
+import { DataGridComponent } from '@/components';
+
+
 type Props = {
   payload: IPayload,
   error?: string | null;
 }
+const PAGE_COUNT = 8;
 const columns: GridColDef[] = [
   { hideSortIcons: true, sortable: true, hideable: true, field: "id", headerName: "ID", width: 70, filterable: false },
-  { hideSortIcons: true, sortable: true, field: "image", headerName: "Image", width: 70 },
+  {
+    hideSortIcons: true, sortable: true, field: "image", headerName: "Image", width: 70, renderCell(row) {
+      return (
+        <Box boxShadow={"1px 2px rgba(151,151,152,11)"} borderRadius={"10px"}>
+          <Image loader={() => "http://localhost:8888" + row.value} src={"http://localhost:8888" + row.value} width={70} height={70} alt={''} />
+        </Box>
+      )
+    }
+  },
   { hideSortIcons: true, sortable: true, field: "productName", headerName: "Name", width: 130 },
   { hideSortIcons: true, sortable: true, field: "categoryName", headerName: "Categories Name", width: 130 },
   {
@@ -36,7 +52,6 @@ const columns: GridColDef[] = [
     hideSortIcons: true, sortable: true, field: "active", headerName: "Status", width: 70,
     align: "center",
     renderCell(row) {
-      console.log(row)
       return row.value !== "ACTIVE" ? <BsHandbag className="text-red-400 font-bold text-[24px]" /> : <BsBagCheck className="text-blue-400 font-bold text-[24px]" />
     }
   },
@@ -47,93 +62,79 @@ const columns: GridColDef[] = [
     }
   }
 ]
-const noRow = () => {
-  return <Stack height="100%" alignItems="center" justifyContent="center">
-    No rows in DataGrid
-  </Stack>
-}
-const noResultOveray = (): JSX.Element => {
-  return <Stack height="100%" alignItems="center" justifyContent="center">
-    No rows in DataGrid
-  </Stack>
-}
-const Products = ({ payload, error = null }: Props) => {
+
+
+
+const Products = () => {
   const dispatch = useDispatch();
-  if (error) {
+  const [start, setStart] = React.useState(0);
+  const [offset, setOffset] = React.useState(PAGE_COUNT);
+
+  const [payload, setPayload] = React.useState<{
+    payload: IPayload,
+    error?: string | null
+  }>({
+    payload: {
+      products: [],
+      count: 0
+    },
+    error: null
+  });
+
+  if (payload.error) {
     dispatch(setAlertState({
-      message: error,
+      message: payload.error,
       severity: 'error',
       show: true
     }))
   }
-  const [paginationModel, setPaginationModel] = React.useState({
-    pageSize: 25,
-    page: 0,
-  });
- 
-  return (
-    <div className="overflow-auto">
-      <DataGrid
-        slots={{
-          loadIcon: CircularProgress,
-          noRowsOverlay: noRow,
-          noResultsOverlay: noResultOveray,
-          pagination: (state) => {
-            console.log(gridPageSelector)
-            return <Pagination
-              color="primary"
-              showFirstButton
-              showLastButton
-              page={paginationModel.page}
-              count={paginationModel.pageSize}
-              // @ts-expect-error
-              renderItem={props2 => <PaginationItem {...props2} disableRipple />}
-              onChange={(event, value) => { }}
-            />
-          }
-        }}
-        paginationModel={paginationModel}
-        onPaginationModelChange={setPaginationModel}
-        initialState={{
-          pagination: { paginationModel: { pageSize: 10 } },
-        }}
-        showCellVerticalBorder
-        showColumnVerticalBorder
-        getRowId={(row) => row.id}
-        rowHeight={90}
-        pageSizeOptions={[5, 10, 15]}
-        disableRowSelectionOnClick
-        disableColumnMenu
-        pagination
-        sx={{
-          fontSize: "14px",
-          boxShadow: 2,
-          '& .MuiDataGrid-overlayWrapper': {
-            height: "50px !important",
-          },
-          '& .MuiDataGrid-cell:hover': {
-            color: 'primary.main',
-          },
-          '& .hideRightSeparator > .MuiDataGrid-columnSeparator': {
-            display: 'none',
-          },
-          "& .MuiDataGrid-columnHeader": {
-            whiteSpace: "normal",
-            lineHeight: "normal"
-          },
-        }}
 
-        columns={columns} rows={payload.products} />
-    </div>
-  )
-}
-export const getServerSideProps: GetServerSideProps<Props> = async () => {
-  const { data } = await axiosInstance.get('/api/products/get-all');
-  return {
-    props: {
-      payload: data
+  const fetchData = async () => {
+    try {
+      const { data } = await axiosInstance.get<IPayload>('/api/products/get-all', {
+        params: {
+          limit: start,
+          offset: offset
+        }
+      });
+      if (data) {
+        setPayload({
+          payload: data
+        })
+      }
+    } catch (error) {
+      setPayload({
+        payload: {} as IPayload,
+        error: new Reporting().reportCli(error).message
+      })
     }
   }
+  React.useEffect(() => {
+    fetchData()
+  }, [start, offset])
+
+
+
+  return (
+    <div className="overflow-auto">
+      <DataGridComponent
+        rows={payload.payload.products}
+        columns={columns}
+        count={payload.payload.count}
+        pageCount={PAGE_COUNT + 2}
+      />
+    </div>
+  )
+
+
 }
+// export const getServerSideProps: GetServerSideProps<Props> = async () => {
+//   const { data } = await axiosInstance.get('/api/products/get-all');
+//   return {
+//     props: {
+//       payload: data
+//     }
+//   }
+// }
 export default Products
 

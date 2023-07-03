@@ -1,3 +1,5 @@
+import { NextApiRequest } from "next";
+
 interface IProductRepo {
-   getProducts: () => Promise<IPayload>
+   getProducts: (req: NextApiRequest) => Promise<IPayload>
 }

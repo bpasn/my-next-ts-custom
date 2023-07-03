@@ -27,7 +27,6 @@ export const jwt = async ({ token, user }: { token: JWT; user?: User }) => {
 export const session = ({ session, token }: { session: { token?: string } & Session; token: JWT }) => {
 
     if (Date.now() / 1000 > Number(token?.accessTokenExpires)) {
-        //console.log("EXPIRED :", Date.now() / 1000 > Number(token?.accessTokenExpires))
         session = {} as any;
         return Promise.resolve({
             ...session,
@@ -69,7 +68,6 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
                             username: credentials?.username,
                             password: credentials?.password
                         })
-                        //console.log({ result })
                         if (result.data.success) {
                             let data = result.data.payload;
                             data.roles = data.roles.map((item: any) => {

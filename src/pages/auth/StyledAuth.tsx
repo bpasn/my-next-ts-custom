@@ -86,7 +86,6 @@ type buttonProp = {
     social?: string;
 }
 export const ButtonSocial = styled('button')<buttonProp>((prop) => {
-    //console.log(prop)
     return ({
         padding: "6px",
         cursor: "pointer",

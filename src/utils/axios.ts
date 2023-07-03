@@ -5,10 +5,8 @@ export default class AxiosHook {
     protected readonly axiosInstance: AxiosInstance | null = null;
     protected accessToken: string | null = null;
     constructor(req: NextApiRequest) {
-        //console.log(this.accessToken)
         if (this.axiosInstance === null) {
             getToken({ req }).then(token => {
-                //console.log(token)
                 this.accessToken = token?.accessToken as string;
             })
             this.axiosInstance = axios.create({
@@ -42,7 +40,7 @@ export default class AxiosHook {
         return await this.axiosInstance!.post<T>(url, body)
     }
 
-    async GET<T = any>(url: string): Promise<AxiosResponse<T, any>> {
-        return await this.axiosInstance!.get<T>(url);
+    async GET<T = any>(url: string, params?: any): Promise<AxiosResponse<T, any>> {
+        return await this.axiosInstance!.get<T>(url, { params });
     }
 }

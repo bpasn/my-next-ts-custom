@@ -35,7 +35,6 @@ const AuthSignIn = (props: Props) => {
             redirect: false
         }).then(response => {
             if (response?.error) {
-                //console.log(response.error)
                 dispatch(setAlertState({
                     message: response.error,
                     show: true,

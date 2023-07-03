@@ -6,7 +6,7 @@ const handle = (
     res: NextApiResponse
 ) => {
     const sProduct = new ProductService(req);
-     sProduct.getProducts().then(response => {
+     sProduct.getProducts(req).then(response => {
         res.status(200).json(response)
      }).catch(error => {
         new Reporting().report(error,res)
