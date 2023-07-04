@@ -39,11 +39,12 @@ const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
           <Component {...pageProps} />
         </React.Suspense>
       )
-    }
-    if (appProps.router.pathname.startsWith("/admin")) {
+    }else 
+    console.log(appProps.router.pathname)
+    if (appProps.router.pathname.startsWith("/admin") || appProps.router.pathname.startsWith("/_error")) {
       return (
         <AdminLayout >
-          <Component  {...pageProps} />
+            <Component  {...pageProps} />
         </AdminLayout>
       )
     }

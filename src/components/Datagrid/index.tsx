@@ -1,4 +1,5 @@
 import axiosInstance from '@/hook/createAxios';
+import useEffectHook from '@/hook/useEffectHook';
 import Reporting from '@/utils/Reporting';
 import { CircularProgress, Pagination, Stack, PaginationItem, Box } from '@mui/material';
 import {
@@ -34,14 +35,12 @@ function PaginationCustom(
     page = 1,
     count,
     pageCount = 10,
-    setState,
-    setPage
+    onChange
   }: {
     count: number
     page: number;
     pageCount: number;
-    setPage: React.Dispatch<React.SetStateAction<number>>
-    setState: React.Dispatch<React.SetStateAction<{ start: number, end: number }>>;
+    onChange: (event: React.ChangeEvent<unknown>, value: number) => void
   }
 ) {
   return (
@@ -61,18 +60,11 @@ function PaginationCustom(
         color="primary"
         variant="outlined"
         shape="rounded"
-        page={page}
+        page={page + 1}
         count={Math.ceil(count / pageCount)}
         // @ts-expect-error
         renderItem={(props2) => <PaginationItem {...props2} disableRipple />}
-        onChange={(event, value) => {
-          if (value === page) return;
-          setState({
-            start: pageCount * value - pageCount,
-            end: pageCount * value
-          })
-          setPage(value)
-        }} />
+        onChange={onChange} />
     </Box>
   );
 
@@ -82,6 +74,7 @@ const DataGridComponent: React.FunctionComponent<Props> = (
   { columns, page = 1, pagination, onChange, url }
 ) => {
   const [currentPage, setCurrentPage] = React.useState(1)
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [payload, setPayload] = React.useState<{
     payload: IPayload,
     error?: string | null
@@ -92,46 +85,80 @@ const DataGridComponent: React.FunctionComponent<Props> = (
     },
     error: null
   });
-  const [pageCount, setPageCount] = React.useState<number>(10)
+  const [pageCount, setPageCount] = React.useState<number>(5)
+  const dataFetchedRef = React.useRef(false);
+
   const [limit, setLimit] = React.useState<{ start: number, end: number }>({
     start: 0,
     end: pageCount
   })
+  const [paginationModel, setPaginationModel] = React.useState<{ page: number, pageSize: number }>({
+    page: 0,
+    pageSize: pageCount
+  })
   if (!pagination) {
     pagination = PaginationCustom({
-      page: currentPage,
+      page: paginationModel.page,
       pageCount: pageCount,
       count: payload.payload.count,
-      setState: setLimit,
-      setPage: setCurrentPage
+      onChange: (event, value) => {
+        if (value === paginationModel.page + 1) return;
+        // setLimit({
+        //   start: pageCount * value - pageCount,
+        //   end: pageCount * value
+        // }) 
+        setPaginationModel(prve => ({
+          ...prve,
+          page: value - 1
+        }))
+        dataFetchedRef.current = false;
+      }
     })
   }
 
   const fetchData = async () => {
+    setLoading(true)
+    // setPayload(prve => ({
+    //   ...prve,
+    //   payload: {
+    //     ...prve.payload,
+    //     data: []
+    //   },
+    // }))
     try {
       const { data } = await axiosInstance.get<IPayload>(url, {
         params: {
-          limit: limit.start,
-          offset: limit.end
+          ...paginationModel
         }
       });
       if (data) {
-        setPayload({
-          payload: data
-        })
+        setTimeout(() => {
+          setPayload({
+            payload: data
+          })
+          setLoading(false)
+        }, 1.5 * 1000)
       }
     } catch (error) {
+      setLoading(false)
       setPayload({
         payload: {} as IPayload,
         error: new Reporting().reportCli(error).message
       })
     }
   }
+
+
   React.useEffect(() => {
-    fetchData()
-  }, [limit])
+    if (dataFetchedRef.current) return;
+    dataFetchedRef.current = true;
+    fetchData();
+  }, [paginationModel])
+
   return (
     <DataGrid
+    disableColumnSelector
+      loading={loading}
       slots={{
         loadIcon: CircularProgress,
         noRowsOverlay: noRow,
@@ -146,6 +173,7 @@ const DataGridComponent: React.FunctionComponent<Props> = (
         })
       }}
       showCellVerticalBorder
+      disableColumnFilter
       showColumnVerticalBorder
       getRowId={(row) => row.id}
       rowHeight={90}
@@ -161,7 +189,7 @@ const DataGridComponent: React.FunctionComponent<Props> = (
         fontSize: "14px",
         boxShadow: 2,
         '& .MuiDataGrid-overlayWrapper': {
-          height: "50px !important",
+          height: "100px !important",
         },
         '& .MuiDataGrid-cell:hover': {
           color: 'none',

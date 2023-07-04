@@ -3,6 +3,7 @@ import isValidReq from '@/utils/isValidReq'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import CategoriesService from '@/services/categoriesService.s'
+import Reporting from '@/utils/Reporting';
 
 
 const handler = async (
@@ -10,8 +11,11 @@ const handler = async (
   res: NextApiResponse
 ) => {
   const sCategories = new CategoriesService(req);
-  const response = await sCategories.getCategories();
-  res.status(200).json(response)
+  sCategories.getCategories().then(response => {
+     res.status(200).json(response)
+  }).catch(error => {
+     new Reporting().report(error,res)
+  })
 }
 
 

@@ -63,7 +63,6 @@ const columns: GridColDef[] = [
         <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"} gap={"20px"}>
           <FaPencil className=' text-gray-400 font-bold text-[24px] cursor-pointer' onClick={() => console.log("Edit")} />
           <RiDeleteBin6Line className='text-gray-400  font-bold text-[24px] cursor-pointer' onClick={() => console.log("Delete")} />
-
         </Box>
       )
     }

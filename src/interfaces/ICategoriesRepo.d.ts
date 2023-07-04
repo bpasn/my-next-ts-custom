@@ -1,5 +1,5 @@
 interface ICategoriesRepo {
-    getCategories(): Promise<Categories[]>;
+    getCategories(): Promise<IPayload>;
 }
 type Categories = {
     id: string;
