@@ -12,8 +12,9 @@ export default async function middleware(request: NextRequest) {
     const currentUser = await getToken({
         req: request,
         secret: process?.env?.NEXTAUTH_SECRET,
-        cookieName: "next-auth.session-token", // next-auth.session-token
+        cookieName: "accessToken", // next-auth.session-token
     })
+    console.log(request.cookies.get("accessToken")?.value)
     /**
      * 
      * protectRoutes.includes(request.nextUrl.pathname)&& currentUser?.accessToken && Date.now() / 1000 > Number(currentUser.accessTokenExpires)

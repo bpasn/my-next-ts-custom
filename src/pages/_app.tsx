@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import '@/styles/globals.css'
 import '@/assets/css/faa-icons.css'
@@ -12,8 +13,9 @@ import { AdminLayout, BackDrop, RootLayout } from '@/components';
 import type { AppProps } from 'next/app';
 
 import { wrapper } from '@/lib/store'
-import { useSelector } from 'react-redux';
-import { selectBackdrop } from '@/lib/slices/Backdrop';
+import { useDispatch} from 'react-redux';
+import { Router } from 'next/router';
+import { reset } from '@/lib/slices/AlertSlice';
 const clientSideEmotionCache = createEmotionCache();
 
 interface MyAppProps extends AppProps {
@@ -29,25 +31,39 @@ const theme = createTheme(ThemeOptions);
 
 
 const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
-  const backdrop = useSelector(selectBackdrop)
+  const dispatch = useDispatch();
+  const [loading, setLoading] = React.useState<boolean>(false);
+
+  Router.events.on("routeChangeStart", (url) => {
+    console.log("Router is changing...")
+    setLoading(true);
+  })
+
+  Router.events.on("routeChangeComplete", (url) => {
+    dispatch(reset())
+    console.log("Route is changing is complete ...")
+    setLoading(false)
+  })
+
   const { Component, emotionCache = clientSideEmotionCache, pageProps, ...appProps } = props;
   const getContent = (): React.JSX.Element => {
     if (['/auth/signin', '/auth/signup'].includes(appProps.router.pathname)) {
       return (
-        <React.Suspense fallback={<BackDrop />}>
-          {backdrop.show && <BackDrop />}
+        <>
+          {loading && <BackDrop />}
           <Component {...pageProps} />
-        </React.Suspense>
+        </>
       )
-    }else 
-    console.log(appProps.router.pathname)
-    if (appProps.router.pathname.startsWith("/admin") || appProps.router.pathname.startsWith("/_error")) {
-      return (
-        <AdminLayout >
+    } else
+      if (appProps.router.pathname.startsWith("/admin") || appProps.router.pathname.startsWith("/_error")) {
+        console.log("change")
+        return (
+          <AdminLayout >
+            {loading && <BackDrop />}
             <Component  {...pageProps} />
-        </AdminLayout>
-      )
-    }
+          </AdminLayout>
+        )
+      }
     return <RootLayout><Component {...pageProps} /></RootLayout>
   }
 

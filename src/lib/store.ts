@@ -6,15 +6,14 @@ const combinedReducers = combineReducers({
   alertReducer: alertSlice.reducer,
   authReducer: authSlice.reducer
 })
-const makeStore = (): Store => {
-  return configureStore({
-    devTools: true,
-    reducer: combinedReducers
-  })
-}
+const store = configureStore({
+  reducer:combinedReducers
+})
+const makeStore = (): Store => store
 
 export type AppStore = ReturnType<typeof makeStore>;
-export type AppState = ReturnType<AppStore['getState']>
+export type AppDispatch = typeof store.dispatch
+export type AppState = ReturnType<typeof store.getState>
 export type AppThunk<ReturnType = void> = ThunkAction<
   ReturnType,
   AppState,

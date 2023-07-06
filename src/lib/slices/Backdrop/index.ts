@@ -35,6 +35,5 @@ export const backdropSlice = createSlice({
 });
 
 export const { showBackdrop, reset } = backdropSlice.actions;
-export const selectBackdrop = (state: AppState) => state.backdropReducer
 
 export default backdropSlice.reducer;
