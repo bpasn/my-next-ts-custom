@@ -9,11 +9,7 @@ const combinedReducers = combineReducers({
 const makeStore = (): Store => {
   return configureStore({
     devTools: true,
-    reducer: {
-      alertReducer: alertSlice.reducer,
-      authReducer: authSlice.reducer,
-      backdropReducer: backdropSlice.reducer
-    }
+    reducer: combinedReducers
   })
 }
 

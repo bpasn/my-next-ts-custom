@@ -1,12 +1,12 @@
 import axiosInstance from '@/hook/createAxios';
-import useEffectHook from '@/hook/useEffectHook';
 import Reporting from '@/utils/Reporting';
-import { CircularProgress, Pagination, Stack, PaginationItem, Box } from '@mui/material';
-import {
-  DataGrid, GridColDef, gridPageSelector,
-  gridPageCountSelector,
-} from '@mui/x-data-grid';
+import _ from 'lodash';
+import { CircularProgress, Stack } from '@mui/material';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import React from 'react'
+import PaginationCustom from './pagination';
+import { useDispatch } from 'react-redux';
+import { setAlertState } from '@/lib/slices/AlertSlice';
 
 type Props = {
   url: string;
@@ -25,82 +25,34 @@ const noResultOveray = (): JSX.Element => {
     No rows in DataGrid
   </Stack>
 }
-/**
- * 
- * 
- * 
- */
-function PaginationCustom(
-  {
-    page = 1,
-    count,
-    pageCount = 10,
-    onChange
-  }: {
-    count: number
-    page: number;
-    pageCount: number;
-    onChange: (event: React.ChangeEvent<unknown>, value: number) => void
-  }
-) {
-  return (
-    <Box width={"100%"} marginLeft={{
-      md: 10,
-      sm: 3,
-      xs: 3
-    }} marginRight={{
-      md: 10,
-      sm: 3,
-      xs: 3
-    }} display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
-      <Box >
-        Showing page {count ? 1 : 0} of {Math.ceil(count / pageCount)}
-      </Box>
-      <Pagination
-        color="primary"
-        variant="outlined"
-        shape="rounded"
-        page={page + 1}
-        count={Math.ceil(count / pageCount)}
-        // @ts-expect-error
-        renderItem={(props2) => <PaginationItem {...props2} disableRipple />}
-        onChange={onChange} />
-    </Box>
-  );
 
-}
 
-const DataGridComponent: React.FunctionComponent<Props> = (
-  { columns, page = 1, pagination, onChange, url }
-) => {
-  const [currentPage, setCurrentPage] = React.useState(1)
+const DataGridComponent: React.FunctionComponent<Props> = ({ columns, pagination, url }) => {
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [payload, setPayload] = React.useState<{
-    payload: IPayload,
-    error?: string | null
-  }>({
-    payload: {
-      data: [],
-      count: 0
-    },
-    error: null
-  });
+  const [payload, setPayload] = React.useState<IPayload>({ data: [], count: 0 });
   const [pageCount, setPageCount] = React.useState<number>(5)
   const dataFetchedRef = React.useRef(false);
-
-  const [limit, setLimit] = React.useState<{ start: number, end: number }>({
-    start: 0,
-    end: pageCount
-  })
+  const dispatch = useDispatch();
+  // const [limit, setLimit] = React.useState<{ start: number, end: number }>({
+  //   start: 0,
+  //   end: pageCount
+  // })
   const [paginationModel, setPaginationModel] = React.useState<{ page: number, pageSize: number }>({
     page: 0,
     pageSize: pageCount
   })
+
   if (!pagination) {
     pagination = PaginationCustom({
       page: paginationModel.page,
       pageCount: pageCount,
-      count: payload.payload.count,
+      count: payload.count,
+      optionPaginationChange(event, child) {
+        setPageCount(event.target.value as number)
+        setPaginationModel(prve => ({...prve,pageSize:event.target.value as number}))
+        dataFetchedRef.current = false;
+      },
+      optionsPagination: [5, 10, 20, 100],
       onChange: (event, value) => {
         if (value === paginationModel.page + 1) return;
         // setLimit({
@@ -118,13 +70,6 @@ const DataGridComponent: React.FunctionComponent<Props> = (
 
   const fetchData = async () => {
     setLoading(true)
-    // setPayload(prve => ({
-    //   ...prve,
-    //   payload: {
-    //     ...prve.payload,
-    //     data: []
-    //   },
-    // }))
     try {
       const { data } = await axiosInstance.get<IPayload>(url, {
         params: {
@@ -133,31 +78,30 @@ const DataGridComponent: React.FunctionComponent<Props> = (
       });
       if (data) {
         setTimeout(() => {
-          setPayload({
-            payload: data
-          })
+          setPayload(data)
           setLoading(false)
         }, 1.5 * 1000)
       }
     } catch (error) {
       setLoading(false)
-      setPayload({
-        payload: {} as IPayload,
-        error: new Reporting().reportCli(error).message
-      })
+      dispatch(setAlertState({
+        message: new Reporting().reportCli(error).message,
+        show: true,
+        severity: "error"
+      }))
     }
   }
-
 
   React.useEffect(() => {
     if (dataFetchedRef.current) return;
     dataFetchedRef.current = true;
     fetchData();
-  }, [paginationModel])
+
+  }, [paginationModel, dispatch, pageCount])
 
   return (
     <DataGrid
-    disableColumnSelector
+      disableColumnSelector
       loading={loading}
       slots={{
         loadIcon: CircularProgress,
@@ -165,13 +109,8 @@ const DataGridComponent: React.FunctionComponent<Props> = (
         noResultsOverlay: noResultOveray,
         pagination: () => pagination
       }}
-      onPaginationModelChange={(pagination) => {
-        setPageCount(pagination.pageSize)
-        setLimit({
-          start: 0,
-          end: pagination.pageSize
-        })
-      }}
+      paginationModel={paginationModel}
+      onPaginationModelChange={setPaginationModel}
       showCellVerticalBorder
       disableColumnFilter
       showColumnVerticalBorder
@@ -205,7 +144,7 @@ const DataGridComponent: React.FunctionComponent<Props> = (
           lineHeight: "normal"
         },
       }}
-      columns={columns} rows={payload.payload.data ? payload.payload.data : []} />
+      columns={columns} rows={!_.isEmpty(payload.data) ? payload.data : []} />
   )
 }
 

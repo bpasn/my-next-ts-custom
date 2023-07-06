@@ -27,7 +27,6 @@ type Props = {
   payload: IPayload,
   error?: string | null;
 }
-const PAGE_COUNT = 8;
 const columns: GridColDef[] = [
   { hideSortIcons: true, sortable: true, hideable: true, field: "id", headerName: "ID", width: 70, filterable: false },
   {
@@ -72,8 +71,6 @@ const columns: GridColDef[] = [
 
 
 const Products = () => {
-  const dispatch = useDispatch();
-
   return (
     <div className="overflow-auto">
       <DataGridComponent
