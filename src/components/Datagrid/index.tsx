@@ -41,7 +41,6 @@ const DataGridComponent: React.FunctionComponent<Props> = ({ columns, pagination
     page: 0,
     pageSize: pageCount
   })
-
   if (!pagination) {
     pagination = PaginationCustom({
       page: paginationModel.page,
@@ -49,7 +48,9 @@ const DataGridComponent: React.FunctionComponent<Props> = ({ columns, pagination
       count: payload.count,
       optionPaginationChange(event, child) {
         setPageCount(event.target.value as number)
-        setPaginationModel(prve => ({...prve,pageSize:event.target.value as number}))
+        setPaginationModel(prve => ({...prve,
+          page:0,
+          pageSize:event.target.value as number}))
         dataFetchedRef.current = false;
       },
       optionsPagination: [5, 10, 20, 100],
@@ -110,13 +111,11 @@ const DataGridComponent: React.FunctionComponent<Props> = ({ columns, pagination
         pagination: () => pagination
       }}
       paginationModel={paginationModel}
-      onPaginationModelChange={setPaginationModel}
       showCellVerticalBorder
       disableColumnFilter
       showColumnVerticalBorder
       getRowId={(row) => row.id}
       rowHeight={90}
-      pageSizeOptions={[5, 10, 15]}
       disableRowSelectionOnClick
       disableColumnMenu
       initialState={{

@@ -22,7 +22,6 @@ export default function useEffectHook({
         return () => {
             if (rendered.current === false) return;
             if (destroy.current) {
-                console.log("DESTROY")
                 destroy.current();
             }
         }

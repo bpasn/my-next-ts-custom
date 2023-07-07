@@ -13,7 +13,7 @@ import { AdminLayout, BackDrop, RootLayout } from '@/components';
 import type { AppProps } from 'next/app';
 
 import { wrapper } from '@/lib/store'
-import { useDispatch} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Router } from 'next/router';
 import { reset } from '@/lib/slices/AlertSlice';
 const clientSideEmotionCache = createEmotionCache();

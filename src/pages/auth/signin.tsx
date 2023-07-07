@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react'
+import React, { useState } from 'react'
 import { BoxAuthBackground, ButtonFormSubmit, Division, FormGroupCustom, Line, SocialBox } from './StyledAuth';
 import { Box, Grid, Link, Stack, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
@@ -11,9 +11,8 @@ import { BackDrop, ButtonSocialComponent, CheckBoxComponent, InputComponent } fr
 import { useDispatch, useSelector } from 'react-redux';
 import { reset, selectAlertState, setAlertState } from '@/lib/slices/AlertSlice';
 import AlertComponent from '@/components/Alert';
-import {  showBackdrop } from '@/lib/slices/Backdrop';
-import { AuthStates, login, selectAuth } from '@/lib/slices/AuthSlice';
-import { AppState } from '@/lib/store';
+import Backdrop, { showBackdrop } from '@/lib/slices/Backdrop';
+import { login } from '@/lib/slices/AuthSlice';
 import { useAppDispatch, useAppSelector } from '@/hook/reduxHook';
 type Props = {}
 export interface IRequest {
@@ -23,53 +22,42 @@ export interface IRequest {
 }
 const AuthSignIn = (props: Props) => {
     const alertState = useSelector(selectAlertState)
-    const authState = useAppSelector(selectAuth)
     const dispatch = useAppDispatch();
+    const [loading, setLoading] = useState(false);
     const { register, handleSubmit, formState } = useForm<IRequest>({
         mode: "onChange"
     });
     const { push } = useRouter()
     const onSubmit = async (data: IRequest) => {
-        dispatch<any>(reset())
-        dispatch<any>(login(data))
-        // signIn("SignIn", {
-        //     username: data.username,
-        //     password: data.password,
-        //     redirect: false
-        // }).then(response => {
-        //     if (response?.error) {
-        //         dispatch(setAlertState({
-        //             message: response.error,
-        //             show: true,
-        //             severity: "error",
-        //         }))
-        //     } else {
-        //         push("/")
-        //         dispatch(reset())
-        //     }
-        // })
+        dispatch(reset())
+        signIn("SignIn", {
+            username: data.username,
+            password: data.password,
+            redirect: false
+        }).then(response => {
+            setLoading(false)
+            if (response?.error) {
+
+                dispatch(setAlertState({
+                    message: response.error,
+                    show: true,
+                    severity: "error",
+                }))
+            } else {
+                push("/")
+                dispatch(reset())
+            }
+        }).catch(() => setLoading(false))
     }
-    React.useEffect(() => {
-        if (authState.error) {
-            dispatch(setAlertState({
-                severity: "error",
-                show: true,
-                message: authState.error.message as string
-            }))
-        }
-    }, [authState,dispatch])
     return (
         <BoxAuthBackground>
-           {authState.loading === AuthStates.LOADING && <BackDrop/>}
             <FormGroupCustom onSubmit={handleSubmit(data => {
-                // console.log("onsubmit")
-                // dispatch(showBackdrop({ show: true }))
-                onSubmit(data)
-                // setTimeout(() => {
-                    
-                //     dispatch(showBackdrop({ show: false }))
-                // }, 1.5 * 1000)
+                setLoading(true)
+                setTimeout(() => {
+                    onSubmit(data)
+                }, 1.5 * 1000)
             })}>
+               {loading && <BackDrop/>}
                 <Grid container>
                     <Grid item sm={12} xs={12} md={12} textAlign={"center"} mb={4}>
                         <Image src={Logo} alt="logo" />

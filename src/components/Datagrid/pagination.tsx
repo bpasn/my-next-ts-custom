@@ -12,15 +12,10 @@ type Props = {
 
 const PaginationCustom: React.FC<Props> = ({ optionsPagination, optionPaginationChange, count, pageCount, page, onChange }) => {
     return (
-        <Box width={"100%"} marginLeft={{
-            md: 10,
-            sm: 3,
-            xs: 3
-        }} marginRight={{
-            md: 10,
-            sm: 3,
-            xs: 3
-        }} display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
+        <Box 
+        width={"100%"} 
+        flexWrap={"wrap"}
+        display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
             <div className="flex pt-[10px] pb-[10px] gap-3 items-center">
                 <span className='flex-1 ml-3 text-left whitespace-nowrap'>Showing page</span>
                 <Select

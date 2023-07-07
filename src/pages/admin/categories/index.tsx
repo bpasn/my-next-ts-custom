@@ -12,7 +12,6 @@ const columns: GridColDef[] = [
   { field: "id", headerName: "Id", width: 70, sortable: false },
   {
     hideSortIcons: true, sortable: true, field: "imagePath", headerName: "Image", width: 70, renderCell(row) {
-      console.log(row.value.replace("src/main/resources/storage",""))
       return (
         <Box boxShadow={"1px 2px rgba(151,151,152,11)"} borderRadius={"10px"}>
           <Image style={{ borderRadius: "10px", height: "50px", objectFit: "cover" }} loader={() => "http://localhost:8888" + row.value.replace("src/main/resources/storage","")} src={"http://localhost:8888" + row.value.replace("src/main/resources/storage","")} width={100} height={100} alt={''} />

@@ -22,7 +22,6 @@ export const login  = createAsyncThunk('auth/login', async (credentials: IReques
         username: credentials.username,
         password: credentials.password
     })
-    console.log(response)
     return response.data
     // try {
 
