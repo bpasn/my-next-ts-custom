@@ -1,3 +1,4 @@
+'use client';
 type StorageType = 'session' | 'local'
 type UserStorageReturnValue = {
     getItem:(key:string,type?:StorageType) => string;
@@ -10,6 +11,12 @@ const useStorage = ():UserStorageReturnValue => {
     const storageType = (type?:StorageType): 'localStorage' | 'sessionStorage' => `${type ?? 'session'}Storage`;
 
     const isBrowser:boolean = (():boolean => typeof window !== undefined)();
+    if(typeof window !== "undefined"){
+        console.log({
+            isBrowser,
+            window
+        })
+    }
     
 
     const getItem = (key:string,type?:StorageType):string => {

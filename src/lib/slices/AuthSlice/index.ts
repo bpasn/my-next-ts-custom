@@ -1,87 +1,74 @@
 'use client';
-import { ActionReducerMapBuilder, PayloadAction, SerializedError, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { HYDRATE } from 'next-redux-wrapper';
+import { ActionReducerMapBuilder, PayloadAction, SerializedError, createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AppState } from '@/lib/store';
 import axios from 'axios';
-import { signIn } from 'next-auth/react';
 import { IRequest } from '@/pages/auth/signin';
-import AuthService, { IUser } from '@/services/auth/authService';
-import { useDispatch } from 'react-redux';
+import { IUser } from '@/services/auth/authService';
+import useStorage from '@/hook/hookStore';
+import { setAlertState } from '../AlertSlice';
+import Reporting from '@/utils/Reporting';
 
-export const fetchUser = createAsyncThunk('auth/me', async (_, thunkAPI) => {
+export const authAction = createAsyncThunk<IUser, any>('auth/me', async (credential: IRequest, thunkAPI) => {
     try {
-        const response = await axios.get("/api/auth/signin");
+        const response = await axios.post<IUser>("http://localhost:3000/api/auth/signin", {
+            username: credential.username,
+            password: credential.password
+        })
+        useStorage().setItem("user", JSON.stringify(response.data))
+        window.location.href = '/'
         return response.data
     } catch (error) {
+        thunkAPI.dispatch(setAlertState({
+            message: new Reporting().reportCli(error).message as string,
+            severity: "error",
+            show: true
+        }))
         return thunkAPI.rejectWithValue({ error: error instanceof Error && error.message })
     }
 })
 
-export const login  = createAsyncThunk('auth/login', async (credentials: IRequest, thunkAPI) =>  {
-    const response = await axios.post("http://localhost:3000/api/auth/signin", {
-        username: credentials.username,
-        password: credentials.password
-    })
-    return response.data
-    // try {
-
-    // } catch (error) {
-    //     // return thunkAPI.rejectWithValue(axios.isAxiosError(error) && error.response?.data.message)
-    // }
-})
 export enum AuthStates {
     IDLE = 'idle',
     LOADING = 'loading',
 }
 export interface IAuthState {
-    accessToken: string;
     loading: AuthStates;
     info?: IUser,
     error?: SerializedError
 }
+const getUser = (): IUser | undefined => {
+    if (typeof window !== "undefined") {
+        return useStorage().getItem("testUser", "session") ? JSON.parse(useStorage().getItem("testUser", "session")) : undefined
+    }
+    return undefined
 
+}
 const internalInitialState: IAuthState = {
-    accessToken: '',
     loading: AuthStates.IDLE,
-    info: undefined,
-    error: undefined
+    info: getUser(),
 }
 export const authSlice = createSlice({
     name: "auth",
     initialState: internalInitialState,
     reducers: {
-        //Action to set the authication status
         setAuthState(state, action: PayloadAction<{ token: string }>) {
             return { ...state, accessToken: action.payload.token };
         },
         reset: () => internalInitialState
     },
     extraReducers: (builder: ActionReducerMapBuilder<IAuthState>) => {
-        builder.addCase(fetchUser.rejected, (state, action) => {
-            //1 Reset State with initial state + add error to state.
-            state = { ...internalInitialState, error: action.error };
-            throw new Error(action.error.message)
-        });
-        builder.addCase(fetchUser.fulfilled, (state, action) => {
-            state.info = action.payload;
-            state.loading = AuthStates.IDLE
-        });
-        builder.addCase(login.rejected, (state, action) => {
-            return state = { ...internalInitialState, error: { message: action.error.message}, loading: AuthStates.IDLE };
-        })
-        builder.addCase(login.pending, (state, action) => {
-           state.loading = AuthStates.LOADING;
-           return state;
-        })
-        builder.addCase(login.fulfilled, (state, action) => {
-            state.loading = AuthStates.IDLE
-            state.info = action.payload
-            return state;
-        })
-        // builder.addCase(register.pending,(state))
+        builder.addCase(authAction.pending, (state, action) => {
+            return { ...state, loading: AuthStates.LOADING }
+        }),
+            builder.addCase(authAction.fulfilled, (state, action) => {
+                return { ...state, loading: AuthStates.IDLE, info: action.payload }
+            }),
+            builder.addCase(authAction.rejected, (state, action) => {
+                return { ...internalInitialState, loading: AuthStates.IDLE, error: action.error }
+            })
     }
 })
 
 export const { setAuthState, reset } = authSlice.actions;
-export const selectAuth = (state:AppState) => state.authReducer
+export const selectAuth = (state: AppState) => state.authReducer
 export default authSlice.reducer

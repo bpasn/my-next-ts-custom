@@ -10,7 +10,7 @@ import { BiCategory, BiSolidCategory } from 'react-icons/bi'
 import { FaProductHunt } from 'react-icons/fa'
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { signOut } from 'next-auth/react';
+import { getSession, signOut } from 'next-auth/react';
 import { useSelector } from 'react-redux';
 import { selectAlertState } from '@/lib/slices/AlertSlice';
 import { AppState } from '@/lib/store';
@@ -88,11 +88,11 @@ const linkMenu: LinkMenu[] = [
 ]
 const AdminLayout: React.FunctionComponent<LayoutProps> = ({ children }) => {
     const route = useRouter()
-    
     const alertState = useSelector((state: AppState) => state.alertReducer) as IAlert;
     const [active, setActive] = React.useState<LinkMenu>(linkMenu.find(item => item.href === route.pathname)!)
     const handleClick = (item: LinkMenu) => {
         if (item.name.replace(/\s/g, "").toLowerCase() === 'signout') {
+            console.log("signout")
             return signOut({ redirect: true })
         }
         setActive(item)

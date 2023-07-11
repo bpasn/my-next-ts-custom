@@ -8,7 +8,7 @@ import ThemeOptions from '../styles/theme/ThemeOption';
 import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import Head from 'next/head';
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, getSession, useSession } from "next-auth/react";
 import { AdminLayout, BackDrop, RootLayout } from '@/components';
 import type { AppProps } from 'next/app';
 
@@ -32,6 +32,8 @@ const theme = createTheme(ThemeOptions);
 
 const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
   const dispatch = useDispatch();
+  
+  const { Component, emotionCache = clientSideEmotionCache, pageProps, ...appProps } = props;
   const [loading, setLoading] = React.useState<boolean>(false);
 
   Router.events.on("routeChangeStart", (url) => {
@@ -44,8 +46,7 @@ const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
     console.log("Route is changing is complete ...")
     setLoading(false)
   })
-
-  const { Component, emotionCache = clientSideEmotionCache, pageProps, ...appProps } = props;
+ 
   const getContent = (): React.JSX.Element => {
     if (['/auth/signin', '/auth/signup'].includes(appProps.router.pathname)) {
       return (

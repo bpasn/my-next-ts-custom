@@ -6,9 +6,10 @@ import { Session, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
-
+import _ from 'lodash'
 
 export const jwt = async ({ token, user }: { token: JWT; user?: User }) => {
+    
     //first call of jwt function just user object is provided;
     if (user?.email) {
         return { ...token, ...user };
@@ -17,7 +18,7 @@ export const jwt = async ({ token, user }: { token: JWT; user?: User }) => {
     // on subsequent calls, token is provided and we need to check if it's expired
     if (token?.accessTokenExpires) {
         if (Date.now() / 1000 < Number(token?.accessTokenExpires)) return { ...token, ...user };
-
+        else return {} as any
     } // else if (token.refreshToken) return refreshAccessToken(token);
 
     return { ...token, ...user }
@@ -25,14 +26,16 @@ export const jwt = async ({ token, user }: { token: JWT; user?: User }) => {
 
 
 export const session = ({ session, token }: { session: { token?: string } & Session; token: JWT }) => {
-
-    if (Date.now() / 1000 > Number(token?.accessTokenExpires)) {
+    
+    if (Date.now() / 1000 > Number(token?.accessTokenExpires) || !Object.keys(token).length ) {
         session = {} as any;
         return Promise.resolve({
             ...session,
             error: "Refresh token has expired. Please log in again to get a new refresh token.",
         });
     }
+    console.log(_.isEmpty(token))
+    if(_.isEmpty(token)) return {} as any
     const accessTokenData = JSON.parse(atob(token?.accessToken.split(".")?.at(1) as string));
     session.user = accessTokenData;
     token.accessTokenExpires = accessTokenData.exp;
@@ -48,6 +51,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         pages: {
             signOut: "/auth/signin",
         },
+        
         providers: [
             CredentialsProvider({
                 // The name to display on the sign in form (e.g. "Sign in with...")
